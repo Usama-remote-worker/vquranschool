@@ -1,65 +1,209 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { TeacherCard } from "@/components/TeacherCard";
+import { CourseCard } from "@/components/CourseCard";
+import Link from "next/link";
 import Image from "next/image";
+import { BookOpen, Users, Video, Clock } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Home() {
+  const courses = [
+    { id: "1", title: "Noorani Qaida", description: "Learn the basics of Arabic reading with proper pronunciation.", level: "Beginner" },
+    { id: "2", title: "Quran Reading (Nazra)", description: "Fluently read the Holy Quran with correct phonetics.", level: "Intermediate" },
+    { id: "3", title: "Quran Memorization (Hifz)", description: "Commit the Holy Quran to memory with our structured program.", level: "Advanced" },
+  ];
+
+  const teachers: any[] = [];
+
+  const features = [
+    { icon: <Video className="w-8 h-8 text-blue-600" />, title: "1-on-1 Live Classes", description: "Interactive personalized sessions via video call." },
+    { icon: <Clock className="w-8 h-8 text-blue-600" />, title: "Flexible Schedule", description: "Choose timings that work best for your time zone." },
+    { icon: <Users className="w-8 h-8 text-blue-600" />, title: "Expert Tutors", description: "Qualified & verified teachers for every level." },
+    { icon: <BookOpen className="w-8 h-8 text-blue-600" />, title: "Structured Curriculum", description: "Progressive courses from beginner to hifz." },
+  ];
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+
+      {/* 
+        PREMIUM LIGHT HERO WITH NAVY ACCENTS
+      */}
+      <section className="relative overflow-hidden pt-32 pb-40 lg:pt-48 lg:pb-52 flex items-center justify-center min-h-[95vh] bg-white border-b border-slate-200">
+
+        {/* Subtle Background */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <Image
+            src="/children.png"
+            alt="Children Studying Quran"
+            fill
+            className="object-cover mix-blend-multiply"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Ambient Lighting */}
+        <div className="absolute inset-0 z-0 pointer-events-none flex justify-center items-center">
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-100 blur-[150px] rounded-full mix-blend-multiply"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-50 blur-[150px] rounded-full mix-blend-multiply"></div>
         </div>
-      </main>
+
+        <div className="container px-4 md:px-6 relative z-10 mx-auto flex flex-col items-center mt-12">
+          {/* Text Content */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+            className="w-full text-center space-y-8 max-w-4xl mx-auto"
+          >
+            <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-blue-950 font-serif leading-[1.1]">
+              Master the Holy Quran from Anywhere
+            </motion.h1>
+
+            <motion.p variants={fadeUp} className="text-lg md:text-xl text-slate-600 leading-relaxed font-light mt-6 max-w-2xl mx-auto">
+              Professional, 1-on-1 interactive online Quran classes with certified teachers for you and your family.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Link href="/book-trial">
+                <Button size="lg" className="w-full sm:w-auto text-lg h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-600/20 rounded-full font-bold transition-all duration-300">
+                  Book Free Trial
+                </Button>
+              </Link>
+              <Link href="/courses">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg h-14 px-8 border-2 border-slate-200 text-blue-900 hover:bg-slate-50 hover:border-slate-300 rounded-full font-bold transition-all duration-300 bg-white shadow-sm">
+                  Explore Courses
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Why Choose Our Academy */}
+      <section className="py-24 relative z-20 bg-slate-50">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-blue-950 font-serif">Why Choose Our Academy</h2>
+            <p className="text-slate-600 text-lg font-light">We bring the traditional Madrasah learning experience to the comfort of your home using modern technology.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, i) => (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                key={i}
+                className="flex flex-col items-center text-center p-8 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 blur-3xl rounded-full transition-transform group-hover:scale-150 duration-700"></div>
+
+                <div className="w-20 h-20 rounded-2xl bg-slate-50 border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors duration-500 flex items-center justify-center mb-6 relative z-10 shadow-sm">
+                  <div className="group-hover:scale-110 transition-transform duration-500">
+                    {feature.icon}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-blue-950 font-serif relative z-10">{feature.title}</h3>
+                <p className="text-slate-600 leading-relaxed font-light relative z-10 text-sm">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Our Comprehensive Courses */}
+      <section className="py-32 bg-white relative overflow-hidden border-t border-slate-200">
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none flex justify-center items-center">
+          <Image src="/bismillah.png" alt="Bismillah Calligraphy" fill className="object-contain scale-110 mix-blend-multiply opacity-40" />
+        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none"></div>
+        <div className="container px-4 md:px-6 mx-auto relative z-10">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-blue-950 font-serif">
+              Our Comprehensive Courses
+            </h2>
+            <p className="text-slate-600 text-lg font-light leading-relaxed">
+              Step-by-step learning paths designed for students of all ages and levels.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {courses.map((course, i) => (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                key={course.id}
+                className="h-full"
+              >
+                <CourseCard course={course} />
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center mt-16">
+            <Link href="/courses">
+              <Button className="h-14 px-10 border-2 bg-white shadow-sm border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full font-bold text-lg">
+                View All Courses
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* Start Your Journey Today */}
+      <section className="py-32 relative overflow-hidden bg-white">
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none flex justify-center items-center">
+          <Image src="/kalima.png" alt="La ilaha illallah Calligraphy" fill className="object-cover scale-150 mix-blend-multiply opacity-20" />
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[150%] bg-blue-50 blur-[150px] rounded-full pointer-events-none"></div>
+
+        <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="max-w-4xl mx-auto bg-white border border-slate-200 p-12 md:p-16 rounded-3xl shadow-2xl shadow-blue-900/5 relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-blue-600 to-emerald-400"></div>
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-950 mb-6 font-serif relative z-10 mt-4">
+              Start Your Journey Today
+            </h2>
+            <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto font-light leading-relaxed relative z-10">
+              Experience our interactive classroom environment with a free, no-obligation trial class.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+              <Link href="/book-trial">
+                <Button className="h-14 px-10 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-600/30 transition-all hover:scale-105">
+                  Book Your Free Trial Now
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   );
 }
