@@ -17,20 +17,23 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 try {
+                    const email = credentials.email.toLowerCase().trim();
+                    const password = credentials.password.trim();
+
                     // Check for mock accounts first (useful for development/testing/demo)
-                    if (credentials.email === "admin@quranacademy.com" && credentials.password === "admin123") {
+                    if (email === "admin@quranacademy.com" && password === "admin123") {
                         return { id: "admin-1", name: "Admin User", email: "admin@quranacademy.com", role: "admin" };
                     }
-                    if (credentials.email === "student@quranacademy.com" && credentials.password === "student123") {
+                    if (email === "student@quranacademy.com" && password === "student123") {
                         return { id: "student-1", name: "Student User", email: "student@quranacademy.com", role: "student" };
                     }
-                    if (credentials.email === "teacher@quranacademy.com" && credentials.password === "teacher123") {
+                    if (email === "teacher@quranacademy.com" && password === "teacher123") {
                         return { id: "teacher-1", name: "Teacher User", email: "teacher@quranacademy.com", role: "teacher" };
                     }
 
                     // Fetch the user from Vercel Postgres if not a mock account
                     const { rows } = await sql`
-                        SELECT * FROM Users WHERE email = ${credentials.email} LIMIT 1
+                        SELECT * FROM Users WHERE LOWER(email) = ${email} LIMIT 1
                     `;
                     const user = rows[0];
 
