@@ -14,14 +14,41 @@ export default function BookTrialPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        // Submit request to db so admin can view
-        setTimeout(() => {
-            alert("Trial request submitted! We will contact you via WhatsApp shortly to confirm the scheduled time.");
-            router.push("/");
-        }, 1500);
+        
+        try {
+            const formData = new FormData(e.currentTarget);
+            const data = {
+                name: formData.get("name"),
+                email: formData.get("email"),
+                country: formData.get("country"),
+                whatsapp: formData.get("whatsapp"),
+                course: formData.get("course"),
+                teacher: formData.get("teacher"),
+                time: formData.get("time"),
+            };
+
+            const res = await fetch("/api/trial", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+
+            if (res.ok) {
+                alert("Trial request submitted! We will contact you via WhatsApp shortly to confirm the scheduled time.");
+                router.push("/");
+            } else {
+                const errorData = await res.json();
+                alert(`Error: ${errorData.error || "Failed to submit request"}`);
+            }
+        } catch (error) {
+            console.error("Error submitting trial form:", error);
+            alert("An unexpected error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -57,27 +84,27 @@ export default function BookTrialPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-3">
                                 <Label htmlFor="name" className="text-slate-700 text-sm font-medium">Student Name</Label>
-                                <Input id="name" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="John Doe" />
+                                <Input id="name" name="name" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="John Doe" />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="email" className="text-slate-700 text-sm font-medium">Email Address</Label>
-                                <Input id="email" type="email" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="name@example.com" />
+                                <Input id="email" name="email" type="email" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="name@example.com" />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="country" className="text-slate-700 text-sm font-medium">Country</Label>
-                                <Input id="country" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="United States, UK, etc." />
+                                <Input id="country" name="country" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="United States, UK, etc." />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="whatsapp" className="text-slate-700 text-sm font-medium">WhatsApp Number</Label>
-                                <Input id="whatsapp" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="+1 (234) 567-890" />
+                                <Input id="whatsapp" name="whatsapp" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="+1 (234) 567-890" />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="age" className="text-slate-700 text-sm font-medium">Student Age</Label>
-                                <Input id="age" type="number" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="e.g. 10" />
+                                <Input id="age" name="age" type="number" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="e.g. 10" />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="course" className="text-slate-700 text-sm font-medium">Preferred Course</Label>
-                                <Select id="course" required className="h-12 bg-white border-slate-200 text-slate-900 focus:ring-blue-500/50 rounded-xl px-4 appearance-none">
+                                <Select id="course" name="course" required className="h-12 bg-white border-slate-200 text-slate-900 focus:ring-blue-500/50 rounded-xl px-4 appearance-none">
                                     <option value="" disabled selected className="text-slate-500">Select a course</option>
                                     <option value="Nazra">Quran Reading (Nazra)</option>
                                     <option value="Tajweed">Tajweed Rules</option>
@@ -87,7 +114,7 @@ export default function BookTrialPage() {
                             </div>
                             <div className="space-y-3 md:col-span-2">
                                 <Label htmlFor="teacher" className="text-slate-700 text-sm font-medium">Preferred Teacher (Optional)</Label>
-                                <Select id="teacher" className="h-12 bg-white border-slate-200 text-slate-900 focus:ring-blue-500/50 rounded-xl px-4 appearance-none">
+                                <Select id="teacher" name="teacher" className="h-12 bg-white border-slate-200 text-slate-900 focus:ring-blue-500/50 rounded-xl px-4 appearance-none">
                                     <option value="" selected>Any available teacher</option>
                                     <option value="Ahmed">Ahmed Raza</option>
                                     <option value="Aisha">Aisha Fatima</option>
@@ -96,7 +123,7 @@ export default function BookTrialPage() {
                             </div>
                             <div className="space-y-3 md:col-span-2">
                                 <Label htmlFor="time" className="text-slate-700 text-sm font-medium">Preferred Time & Days</Label>
-                                <Input id="time" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="e.g. Evenings, weekends" />
+                                <Input id="time" name="time" required className="h-12 bg-white border-slate-200 text-slate-900 focus-visible:ring-blue-500/50 rounded-xl px-4" placeholder="e.g. Evenings, weekends" />
                             </div>
                         </div>
                     </CardContent>

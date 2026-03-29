@@ -10,6 +10,7 @@ export default function StudentDashboard() {
     const { data: session } = useSession();
     const [studentData, setStudentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [teacherName, setTeacherName] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStudentInfo = async () => {
@@ -20,7 +21,15 @@ export default function StudentDashboard() {
                 const data = await res.json();
                 if (data.users) {
                     const me = data.users.find((u: any) => u.email === session.user?.email);
-                    if (me) setStudentData(me);
+                    if (me) {
+                        setStudentData(me);
+                        if (me.assigned_teacher) {
+                            const teacher = data.users.find((u: any) => u.id === me.assigned_teacher);
+                            if (teacher) {
+                                setTeacherName(teacher.name);
+                            }
+                        }
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching student info:", error);
@@ -73,7 +82,7 @@ export default function StudentDashboard() {
                         <User className="h-5 w-5 text-blue-600" />
                     </CardHeader>
                     <CardContent className="pt-5">
-                        <div className="text-2xl font-bold text-slate-900">{studentData?.assigned_teacher || "Not Assigned Yet"}</div>
+                        <div className="text-2xl font-bold text-slate-900">{teacherName || "Not Assigned Yet"}</div>
                         <p className="text-xs text-slate-500 mt-1">Specialist in {studentData?.course || "Quranic Studies"}</p>
                         <Button 
                             size="sm" 

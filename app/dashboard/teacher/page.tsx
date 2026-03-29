@@ -13,14 +13,14 @@ export default function TeacherDashboard() {
 
     useEffect(() => {
         const fetchStudents = async () => {
-            if (!session?.user?.id) return;
+            if (!(session?.user as any)?.id) return;
             setLoading(true);
             try {
                 const res = await fetch('/api/admin/users');
                 const data = await res.json();
                 if (data.users) {
-                    // Find students where this teacher is assigned (this handles database linking)
-                    const myStudents = data.users.filter((u: any) => u.assigned_teacher === session.user?.name);
+                    // Find students where this teacher is assigned (this handles database linking using the teacher's UUID)
+                    const myStudents = data.users.filter((u: any) => u.assigned_teacher === (session?.user as any)?.id);
                     setAssignedStudents(myStudents);
                 }
             } catch (error) {
