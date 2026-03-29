@@ -17,23 +17,24 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 try {
-                    // Fetch the user from Vercel Postgres
+                    // Check for mock accounts first (useful for development/testing/demo)
+                    if (credentials.email === "admin@quranacademy.com" && credentials.password === "admin123") {
+                        return { id: "admin-1", name: "Admin User", email: "admin@quranacademy.com", role: "admin" };
+                    }
+                    if (credentials.email === "student@quranacademy.com" && credentials.password === "student123") {
+                        return { id: "student-1", name: "Student User", email: "student@quranacademy.com", role: "student" };
+                    }
+                    if (credentials.email === "teacher@quranacademy.com" && credentials.password === "teacher123") {
+                        return { id: "teacher-1", name: "Teacher User", email: "teacher@quranacademy.com", role: "teacher" };
+                    }
+
+                    // Fetch the user from Vercel Postgres if not a mock account
                     const { rows } = await sql`
                         SELECT * FROM Users WHERE email = ${credentials.email} LIMIT 1
                     `;
                     const user = rows[0];
 
                     if (!user) {
-                        // Mock accounts for fallback/testing if DB connection fails or testing is needed
-                        if (credentials.email === "admin@quranacademy.com" && credentials.password === "admin123") {
-                            return { id: "admin-1", name: "Admin User", email: "admin@quranacademy.com", role: "admin" };
-                        }
-                        if (credentials.email === "student@quranacademy.com" && credentials.password === "student123") {
-                            return { id: "student-1", name: "Student User", email: "student@quranacademy.com", role: "student" };
-                        }
-                        if (credentials.email === "teacher@quranacademy.com" && credentials.password === "teacher123") {
-                            return { id: "teacher-1", name: "Teacher User", email: "teacher@quranacademy.com", role: "teacher" };
-                        }
                         return null;
                     }
 

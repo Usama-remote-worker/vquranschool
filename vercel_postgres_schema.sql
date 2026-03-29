@@ -76,5 +76,12 @@ CREATE TABLE IF NOT EXISTS TrialBookings (
     course VARCHAR(100),
     teacher VARCHAR(255),
     preferred_time VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'new',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Migration: Add status column if it doesn't already exist (for existing databases)
+DO $$ BEGIN
+    ALTER TABLE TrialBookings ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'new';
+EXCEPTION WHEN others THEN null;
+END $$;
