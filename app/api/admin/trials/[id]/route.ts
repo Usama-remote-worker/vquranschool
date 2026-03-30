@@ -4,14 +4,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 // PATCH - Update trial status (e.g., mark as contacted, assign teacher)
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user as any)?.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { status, assigned_teacher } = body;
 
@@ -58,14 +58,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 // DELETE - Remove a trial booking
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session || (session.user as any)?.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         const { rowCount } = await sql`DELETE FROM TrialBookings WHERE id = ${id}`;
 
         if (rowCount === 0) {
