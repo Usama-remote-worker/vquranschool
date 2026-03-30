@@ -16,6 +16,7 @@ export async function GET() {
                 id,
                 name,
                 email,
+                age,
                 country,
                 whatsapp,
                 course,

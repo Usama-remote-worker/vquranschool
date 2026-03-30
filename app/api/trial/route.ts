@@ -4,7 +4,7 @@ import { sql } from '@vercel/postgres';
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, email, country, whatsapp, course, teacher, time } = body;
+        const { name, email, age, country, whatsapp, course, teacher, time } = body;
 
         if (!name || !email || !course || !whatsapp) {
             return NextResponse.json({ error: 'Missing critical booking information fields (name, email, course, whatsapp).' }, { status: 400 });
@@ -12,8 +12,8 @@ export async function POST(req: Request) {
 
         // Insert a new TrialBooking record using Vercel Postgres
         const { rows } = await sql`
-            INSERT INTO TrialBookings (name, email, country, whatsapp, course, teacher, preferred_time)
-            VALUES (${name}, ${email}, ${country}, ${whatsapp}, ${course}, ${teacher}, ${time})
+            INSERT INTO TrialBookings (name, email, age, country, whatsapp, course, teacher, preferred_time)
+            VALUES (${name}, ${email}, ${age}, ${country}, ${whatsapp}, ${course}, ${teacher}, ${time})
             RETURNING id
         `;
 

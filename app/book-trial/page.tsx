@@ -23,6 +23,7 @@ export default function BookTrialPage() {
             const data = {
                 name: formData.get("name"),
                 email: formData.get("email"),
+                age: formData.get("age"),
                 country: formData.get("country"),
                 whatsapp: formData.get("whatsapp"),
                 course: formData.get("course"),
