@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, BookOpen, MessageSquare, Loader2, Video, Inbox, LayoutDashboard } from "lucide-react";
+import { Calendar, Clock, User, BookOpen, MessageSquare, Loader2, Video, LayoutDashboard, CreditCard, X, Sparkles, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default function StudentDashboard() {
@@ -11,13 +11,14 @@ export default function StudentDashboard() {
     const [studentData, setStudentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [teacherName, setTeacherName] = useState<string | null>(null);
+    const [showPricingBanner, setShowPricingBanner] = useState(false);
 
     useEffect(() => {
         const fetchStudentInfo = async () => {
             if (!session?.user?.email) return;
             setLoading(true);
             try {
-                const res = await fetch('/api/admin/users'); // Reuse admin users fetch to get status/course
+                const res = await fetch('/api/admin/users');
                 const data = await res.json();
                 if (data.users) {
                     const me = data.users.find((u: any) => u.email === session.user?.email);
@@ -25,9 +26,7 @@ export default function StudentDashboard() {
                         setStudentData(me);
                         if (me.assigned_teacher) {
                             const teacher = data.users.find((u: any) => u.id === me.assigned_teacher);
-                            if (teacher) {
-                                setTeacherName(teacher.name);
-                            }
+                            if (teacher) setTeacherName(teacher.name);
                         }
                     }
                 }
@@ -39,6 +38,21 @@ export default function StudentDashboard() {
         };
         fetchStudentInfo();
     }, [session]);
+
+    useEffect(() => {
+        // Show pricing banner for new (pending) students who haven't dismissed it yet
+        if (studentData?.status === 'pending') {
+            const dismissed = localStorage.getItem(`pricing_banner_dismissed_${studentData.id}`);
+            if (!dismissed) setShowPricingBanner(true);
+        }
+    }, [studentData]);
+
+    const dismissBanner = () => {
+        setShowPricingBanner(false);
+        if (studentData?.id) {
+            localStorage.setItem(`pricing_banner_dismissed_${studentData.id}`, 'true');
+        }
+    };
 
     if (loading) {
         return (
@@ -53,15 +67,61 @@ export default function StudentDashboard() {
     const isApproved = studentData?.status === 'approved';
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500">
+
+            {/* ── Welcome Banner (shown only to new/pending students) ── */}
+            {showPricingBanner && (
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white p-6 shadow-xl shadow-blue-900/20">
+                    {/* background decoration */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.12)_0%,_transparent_60%)] pointer-events-none" />
+                    <div className="absolute top-0 right-0 h-full w-1/3 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.04%3E%3Cpath d=M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30 pointer-events-none" />
+
+                    <button
+                        onClick={dismissBanner}
+                        className="absolute top-4 right-4 p-1.5 rounded-full bg-white/15 hover:bg-white/25 transition-colors z-10"
+                        aria-label="Dismiss"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-5">
+                        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-6 h-6 text-yellow-300" />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-1">Welcome to vQuranSchool!</p>
+                            <h2 className="text-xl font-bold mb-1">Choose the program that suits you best 🎓</h2>
+                            <p className="text-blue-100 text-sm leading-relaxed">
+                                We offer flexible plans — 3 or 5 live sessions per week. Pick what fits your schedule and start your Quran journey today.
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
+                            <Link href="/dashboard/student/pricing">
+                                <Button className="bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl h-11 px-6 w-full sm:w-auto shadow-lg shadow-blue-900/20 transition-all hover:scale-[1.02]">
+                                    <CreditCard className="w-4 h-4 mr-2" />
+                                    View All Plans
+                                </Button>
+                            </Link>
+                            <button
+                                onClick={dismissBanner}
+                                className="text-sm text-blue-200 hover:text-white font-medium transition-colors text-center"
+                            >
+                                Remind me later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Page Header ── */}
             <div>
                 <h1 className="text-3xl font-bold tracking-tight text-slate-900">Welcome, {session?.user?.name || "Student"}!</h1>
                 <p className="text-slate-500 mt-2">Here is an overview of your learning journey.</p>
             </div>
 
-            {/* Approval Status Alert */}
+            {/* ── Approval Status Alert ── */}
             {isPending && (
-                <Card className="border-amber-200 bg-amber-50/50 shadow-sm animate-pulse border-l-4 border-l-amber-500">
+                <Card className="border-amber-200 bg-amber-50/50 shadow-sm border-l-4 border-l-amber-500">
                     <CardContent className="py-4 flex items-center gap-4">
                         <div className="p-2 bg-amber-100 rounded-full text-amber-600">
                             <Clock className="w-5 h-5" />
@@ -74,6 +134,7 @@ export default function StudentDashboard() {
                 </Card>
             )}
 
+            {/* ── Main Stats Cards ── */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* Teacher Card */}
                 <Card className="border-blue-100 shadow-sm hover:border-blue-300 transition-colors">
@@ -84,9 +145,9 @@ export default function StudentDashboard() {
                     <CardContent className="pt-5">
                         <div className="text-2xl font-bold text-slate-900">{teacherName || "Not Assigned Yet"}</div>
                         <p className="text-xs text-slate-500 mt-1">Specialist in {studentData?.course || "Quranic Studies"}</p>
-                        <Button 
-                            size="sm" 
-                            variant="outline" 
+                        <Button
+                            size="sm"
+                            variant="outline"
                             className="w-full mt-6 text-blue-600 border-blue-200 hover:bg-blue-50 h-10 shadow-sm"
                             disabled={!studentData?.assigned_teacher}
                         >
@@ -127,7 +188,7 @@ export default function StudentDashboard() {
                         <div className="flex items-center gap-2 mt-4 text-sm text-blue-600 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
                             <Calendar className="w-4 h-4 shrink-0" /> Schedule will be updated after approval
                         </div>
-                        <Button 
+                        <Button
                             className="w-full mt-6 bg-blue-600 hover:bg-blue-700 h-10 text-white shadow-sm"
                             disabled={!isApproved}
                         >
@@ -137,7 +198,7 @@ export default function StudentDashboard() {
                 </Card>
             </div>
 
-            {/* Quick Links / Resources */}
+            {/* ── Quick Links ── */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Link href="/dashboard/student/course">
                     <Card className="border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group flex items-center p-6 bg-white cursor-pointer">
@@ -148,7 +209,7 @@ export default function StudentDashboard() {
                             <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-600 transition-colors">Course Materials</h3>
                             <p className="text-slate-500 text-sm">Access your notes, recordings, and assignments.</p>
                         </div>
-                        <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-all group-hover:translate-x-1" />
+                        <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-all group-hover:translate-x-1" />
                     </Card>
                 </Link>
                 <Link href="/dashboard/student/schedule">
@@ -160,16 +221,10 @@ export default function StudentDashboard() {
                             <h3 className="font-bold text-slate-800 text-lg group-hover:text-blue-600 transition-colors">Weekly Schedule</h3>
                             <p className="text-slate-500 text-sm">View and manage your upcoming live classes.</p>
                         </div>
-                        <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-all group-hover:translate-x-1" />
+                        <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-all group-hover:translate-x-1" />
                     </Card>
                 </Link>
             </div>
         </div>
     );
-}
-
-function ArrowRight({ className }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m9 18 6-6-6-6"/></svg>
-    )
 }

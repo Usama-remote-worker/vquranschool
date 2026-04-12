@@ -1,144 +1,351 @@
+"use client";
+import { useState } from "react";
+import { Check, CreditCard, Building, Globe, Zap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard, Building, Globe } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+
+// ─────────────────────────────────────────────────────────────
+// Pricing data: two frequency tiers × three duration plans
+// ─────────────────────────────────────────────────────────────
+const tiers = [
+    {
+        id: "3x",
+        label: "3 Classes / Week",
+        sublabel: "Light & Steady",
+        icon: BookOpen,
+        color: "slate",
+        plans: [
+            {
+                name: "Monthly",
+                total: "$48",
+                frequency: "/ month",
+                perSession: "$4.00",
+                sessions: 12,
+                durationNote: "12 sessions / month",
+                saving: null,
+                description: "Try it month-to-month with no long commitment.",
+                features: [
+                    "3 live sessions per week",
+                    "30 minutes per session",
+                    "Daily Quran Reading",
+                    "Basic Tajweed Rules",
+                    "Cancel anytime",
+                ],
+                recommended: false,
+            },
+            {
+                name: "Quarterly",
+                total: "$130",
+                frequency: "/ 3 months",
+                perSession: "$3.62",
+                sessions: 36,
+                durationNote: "36 sessions total",
+                saving: "Save $14",
+                description: "3 months of steady, structured Quran learning.",
+                features: [
+                    "3 live sessions per week",
+                    "30 minutes per session",
+                    "Daily Sunnah Duas",
+                    "Six Kalimas Memorization",
+                    "Short Surah Memorization",
+                ],
+                recommended: false,
+            },
+            {
+                name: "Semi-Annual",
+                total: "$245",
+                frequency: "/ 6 months",
+                perSession: "$3.40",
+                sessions: 72,
+                durationNote: "72 sessions total",
+                saving: "Save $43",
+                description: "Best value for the 3×/week learner.",
+                features: [
+                    "3 live sessions per week",
+                    "30 minutes per session",
+                    "Salah (Prayer) Training",
+                    "Islamic Manners & Etiquettes",
+                    "Comprehensive Evaluation",
+                ],
+                recommended: false,
+            },
+        ],
+    },
+    {
+        id: "5x",
+        label: "5 Classes / Week",
+        sublabel: "Intensive & Fast",
+        icon: Zap,
+        color: "blue",
+        plans: [
+            {
+                name: "Monthly",
+                total: "$99",
+                frequency: "/ month",
+                perSession: "$4.95",
+                sessions: 20,
+                durationNote: "20 sessions / month",
+                saving: null,
+                description: "Maximum immersion, ultimate flexibility.",
+                features: [
+                    "5 live sessions per week",
+                    "30 minutes per session",
+                    "Daily Quran Reading",
+                    "Basic Tajweed Rules",
+                    "Cancel anytime",
+                ],
+                recommended: false,
+            },
+            {
+                name: "Quarterly",
+                total: "$270",
+                frequency: "/ 3 months",
+                perSession: "$4.50",
+                sessions: 60,
+                durationNote: "60 sessions total",
+                saving: "Save $27",
+                description: "Our most popular plan — real results in 3 months.",
+                features: [
+                    "5 live sessions per week",
+                    "30 minutes per session",
+                    "Daily Sunnah Duas",
+                    "Six Kalimas Memorization",
+                    "Short Surah Memorization",
+                ],
+                recommended: true,
+            },
+            {
+                name: "Semi-Annual",
+                total: "$510",
+                frequency: "/ 6 months",
+                perSession: "$4.25",
+                sessions: 120,
+                durationNote: "120 sessions total",
+                saving: "Save $84",
+                description: "For the serious, long-term Quran student.",
+                features: [
+                    "5 live sessions per week",
+                    "30 minutes per session",
+                    "Salah (Prayer) Training",
+                    "Islamic Manners & Etiquettes",
+                    "Comprehensive Evaluation",
+                ],
+                recommended: false,
+            },
+        ],
+    },
+];
 
 export default function PricingPage() {
-    const plans = [
-        {
-            name: "Monthly Plan",
-            price: "$99",
-            frequency: "/ month",
-            perSession: "$4.95",
-            sessionsNote: "20 sessions/month",
-            description: "Flexible month-to-month learning.",
-            features: [
-                "5 Classes per week",
-                "30 minutes per class",
-                "Daily Quran Reading",
-                "Basic Tajweed Rules",
-            ],
-            recommended: false
-        },
-        {
-            name: "Quarterly Plan",
-            price: "$270",
-            frequency: "/ 3 months",
-            perSession: "$4.50",
-            sessionsNote: "60 sessions total · Save $27",
-            description: "Our most popular plan. Save $27!",
-            features: [
-                "5 Classes per week",
-                "30 minutes per class",
-                "Daily Sunnah Duas",
-                "Six Kalimas Memorization",
-                "Short Surah Memorization"
-            ],
-            recommended: true
-        },
-        {
-            name: "Semi-Annual Plan",
-            price: "$510",
-            frequency: "/ 6 months",
-            perSession: "$4.25",
-            sessionsNote: "120 sessions total · Save $84",
-            description: "Best value for long-term students. Save $84!",
-            features: [
-                "5 Classes per week",
-                "30 minutes per class",
-                "Salah (Prayer) Training",
-                "Islamic Manners & Etiquettes",
-                "Comprehensive Evaluation"
-            ],
-            recommended: false
-        }
-    ];
+    const [activeTier, setActiveTier] = useState<"3x" | "5x">("5x");
+
+    const currentTier = tiers.find((t) => t.id === activeTier)!;
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            {/* ── Header ── */}
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">Pricing & Packages</h1>
-                <p className="text-slate-500">Choose a plan that fits your schedule and learning goals.</p>
+                <p className="text-slate-500 mt-1">Choose your session frequency and the plan duration that suits you best.</p>
             </div>
 
-            <section className="relative overflow-hidden bg-slate-50">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-100 via-transparent to-transparent pointer-events-none"></div>
-                <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {plans.map((plan, index) => (
-                            <div key={index} className={`relative flex flex-col p-8 rounded-3xl bg-white border ${plan.recommended ? 'border-blue-500 shadow-2xl shadow-blue-900/10 scale-105 z-10' : 'border-slate-200 shadow-sm mt-4 lg:mt-0'} transition-all hover:border-blue-300`}>
-                                {plan.recommended && (
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-emerald-500 text-white px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase shadow-md">
-                                        Most Popular
-                                    </div>
-                                )}
-                                <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-blue-950 font-serif mb-2">{plan.name}</h3>
-                                    <p className="text-slate-500 font-light text-sm">{plan.description}</p>
-                                </div>
-                                <div className="mb-6">
-                                    <span className="text-4xl font-extrabold text-blue-600">{plan.price}</span>
-                                    <span className="text-slate-500 font-medium ml-1">{plan.frequency}</span>
-                                    {/* Per session highlight */}
-                                    <div className="flex items-center gap-2 mt-3 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
-                                        <span className="text-blue-700 font-bold text-lg">{(plan as any).perSession}</span>
-                                        <span className="text-blue-600 text-sm font-medium">/ session</span>
-                                        <span className="ml-auto text-xs text-slate-400">{(plan as any).sessionsNote}</span>
-                                    </div>
-                                </div>
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-start gap-3">
-                                            <div className="mt-1 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                                                <Check className="w-3.5 h-3.5 text-blue-600" />
-                                            </div>
-                                            <span className="text-slate-600">{feature}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link href="/book-trial" className="w-full">
-                                    <Button className={`w-full h-14 rounded-xl font-bold text-lg transition-all ${plan.recommended ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30' : 'bg-slate-50 hover:bg-slate-100 text-blue-700 border border-slate-200'}`}>
-                                        Get Started
-                                    </Button>
-                                </Link>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Payment Methods Section */}
-                    <div className="mt-32 max-w-4xl mx-auto bg-white border border-slate-200 p-10 md:p-14 rounded-3xl shadow-xl relative overflow-hidden">
-                        <div className="absolute top-[-50px] right-[-50px] w-[200px] h-[200px] bg-blue-50 blur-[80px] rounded-full pointer-events-none"></div>
-                        
-                        <div className="text-center mb-10 relative z-10">
-                            <h2 className="text-3xl font-bold text-blue-950 font-serif mb-4">Accepted Payment Methods</h2>
-                            <p className="text-slate-600 font-light">We offer flexible and secure payment methods for students across the globe.</p>
-                        </div>
-
-                        <div className="grid md:grid-cols-3 gap-6 relative z-10">
-                            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:border-blue-200 hover:bg-blue-50/50">
-                                <CreditCard className="w-10 h-10 text-blue-600 mb-4" />
-                                <h4 className="font-bold text-blue-950 mb-2">Debit / Credit Card</h4>
-                                <p className="text-sm text-slate-500 font-light">Secure online payments via major credit & debit cards.</p>
-                            </div>
-                            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:border-blue-200 hover:bg-blue-50/50">
-                                <Globe className="w-10 h-10 text-blue-600 mb-4" />
-                                <h4 className="font-bold text-blue-950 mb-2">Global Transfer</h4>
-                                <p className="text-sm text-slate-500 font-light">Remitly, Western Union, Wise, and other international services.</p>
-                            </div>
-                            <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100 transition-colors hover:border-blue-200 hover:bg-blue-50/50">
-                                <Building className="w-10 h-10 text-blue-600 mb-4" />
-                                <h4 className="font-bold text-blue-950 mb-2">Bank Transfer</h4>
-                                <p className="text-sm text-slate-500 font-light">Direct local bank transfer available for selected regions.</p>
-                            </div>
-                        </div>
-
-                        <div className="mt-10 p-6 bg-blue-50 text-blue-900 rounded-xl text-center border border-blue-100 relative z-10">
-                            <h4 className="font-semibold mb-1">Need custom billing?</h4>
-                            <p className="text-sm text-blue-700/80">If you have multiple family members enrolling, <Link href="/contact" className="underline font-medium hover:text-blue-600">contact us</Link> for special family discounts.</p>
-                        </div>
-                    </div>
+            {/* ── Frequency Toggle ── */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider shrink-0">Sessions per week:</p>
+                <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl">
+                    {tiers.map((tier) => (
+                        <button
+                            key={tier.id}
+                            onClick={() => setActiveTier(tier.id as "3x" | "5x")}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
+                                activeTier === tier.id
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-[1.02]"
+                                    : "text-slate-600 hover:text-slate-900"
+                            }`}
+                        >
+                            <tier.icon className="w-4 h-4" />
+                            {tier.label}
+                            {tier.id === "5x" && (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${activeTier === "5x" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"}`}>
+                                    Popular
+                                </span>
+                            )}
+                        </button>
+                    ))}
                 </div>
-            </section>
+            </div>
+
+            {/* ── Plan description strip ── */}
+            <div className={`rounded-2xl px-5 py-4 flex items-center gap-4 ${activeTier === "3x" ? "bg-slate-50 border border-slate-200" : "bg-blue-50 border border-blue-100"}`}>
+                <currentTier.icon className={`w-5 h-5 shrink-0 ${activeTier === "3x" ? "text-slate-600" : "text-blue-600"}`} />
+                <p className={`text-sm font-medium ${activeTier === "3x" ? "text-slate-700" : "text-blue-800"}`}>
+                    {activeTier === "3x"
+                        ? "3 classes/week · Great for students with busy schedules or beginners building consistent habits."
+                        : "5 classes/week · Ideal for fast progress, dedicated learners, and younger students."}
+                </p>
+            </div>
+
+            {/* ── Plans Grid ── */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                {currentTier.plans.map((plan, i) => (
+                    <div
+                        key={i}
+                        className={`relative flex flex-col rounded-3xl bg-white border-2 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-900/10 ${
+                            plan.recommended
+                                ? "border-blue-500 shadow-2xl shadow-blue-900/10 scale-[1.03] z-10"
+                                : "border-slate-200 shadow-sm"
+                        }`}
+                    >
+                        {/* Badge */}
+                        {plan.recommended && (
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-lg">
+                                ⭐ Most Popular
+                            </div>
+                        )}
+                        {plan.saving && !plan.recommended && (
+                            <div className="absolute top-0 right-4 -translate-y-1/2 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow">
+                                {plan.saving}
+                            </div>
+                        )}
+
+                        {/* Plan Header */}
+                        <div className={`px-7 pt-8 pb-5 rounded-t-3xl ${plan.recommended ? "bg-gradient-to-br from-blue-600 to-indigo-700" : "bg-slate-50"}`}>
+                            <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${plan.recommended ? "text-blue-200" : "text-slate-400"}`}>
+                                {currentTier.label}
+                            </p>
+                            <h2 className={`text-xl font-extrabold font-serif mb-2 ${plan.recommended ? "text-white" : "text-blue-950"}`}>
+                                {plan.name} Plan
+                            </h2>
+                            <p className={`text-sm leading-relaxed ${plan.recommended ? "text-blue-100" : "text-slate-500"}`}>
+                                {plan.description}
+                            </p>
+                        </div>
+
+                        {/* Pricing */}
+                        <div className="px-7 py-5 border-b border-slate-100">
+                            <div className="flex items-end gap-2 mb-3">
+                                <span className="text-4xl font-extrabold text-blue-600">{plan.total}</span>
+                                <span className="text-slate-400 font-medium pb-1">{plan.frequency}</span>
+                            </div>
+                            {/* Per-session call-out */}
+                            <div className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
+                                    <span className="text-white text-xs font-black">$</span>
+                                </div>
+                                <div>
+                                    <span className="text-blue-700 font-extrabold text-xl">{plan.perSession}</span>
+                                    <span className="text-blue-600 text-sm font-semibold"> / session</span>
+                                </div>
+                                {plan.saving && (
+                                    <span className="ml-auto text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                                        {plan.saving}
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-2 text-center">{plan.durationNote}</p>
+                        </div>
+
+                        {/* Features */}
+                        <div className="px-7 py-5 flex-1">
+                            <ul className="space-y-3">
+                                {plan.features.map((f, fi) => (
+                                    <li key={fi} className="flex items-center gap-3">
+                                        <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                                            <Check className="w-3 h-3 text-blue-600" />
+                                        </div>
+                                        <span className="text-slate-600 text-sm">{f}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* CTA */}
+                        <div className="px-7 pb-7">
+                            <Link href="/contact" className="block w-full">
+                                <Button
+                                    className={`w-full h-12 rounded-xl font-bold text-base transition-all hover:scale-[1.02] ${
+                                        plan.recommended
+                                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/25"
+                                            : "bg-slate-900 hover:bg-slate-800 text-white"
+                                    }`}
+                                >
+                                    Get Started
+                                </Button>
+                            </Link>
+                            <p className="text-xs text-center text-slate-400 mt-2">
+                                Contact us to activate your plan
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* ── Quick comparison strip ── */}
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <div className="bg-blue-950 text-white px-6 py-4">
+                    <h3 className="font-bold text-base">Per-Session Price Comparison</h3>
+                    <p className="text-blue-300 text-xs mt-0.5">Longer commitment = lower cost per session</p>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                                <th className="text-left py-3 px-6">Plan</th>
+                                <th className="text-center py-3 px-4">Sessions/Week</th>
+                                <th className="text-center py-3 px-4">Duration</th>
+                                <th className="text-center py-3 px-4">Total</th>
+                                <th className="text-center py-3 px-4 font-bold text-blue-700">Per Session</th>
+                                <th className="text-center py-3 px-4 text-emerald-600">Saving</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[
+                                { label: "Light Monthly", freq: "3×/wk", dur: "1 month", total: "$48", per: "$4.00", save: "—", highlight: false },
+                                { label: "Light Quarterly", freq: "3×/wk", dur: "3 months", total: "$130", per: "$3.62", save: "$14", highlight: false },
+                                { label: "Light Semi-Annual", freq: "3×/wk", dur: "6 months", total: "$245", per: "$3.40", save: "$43", highlight: false },
+                                { label: "Intensive Monthly", freq: "5×/wk", dur: "1 month", total: "$99", per: "$4.95", save: "—", highlight: false },
+                                { label: "Intensive Quarterly ⭐", freq: "5×/wk", dur: "3 months", total: "$270", per: "$4.50", save: "$27", highlight: true },
+                                { label: "Intensive Semi-Annual", freq: "5×/wk", dur: "6 months", total: "$510", per: "$4.25", save: "$84", highlight: false },
+                            ].map((row, i) => (
+                                <tr key={i} className={`border-t border-slate-100 ${row.highlight ? "bg-blue-50" : "hover:bg-slate-50"}`}>
+                                    <td className={`py-3 px-6 font-semibold ${row.highlight ? "text-blue-800" : "text-slate-700"}`}>{row.label}</td>
+                                    <td className="py-3 px-4 text-center text-slate-500">{row.freq}</td>
+                                    <td className="py-3 px-4 text-center text-slate-500">{row.dur}</td>
+                                    <td className="py-3 px-4 text-center text-slate-600">{row.total}</td>
+                                    <td className={`py-3 px-4 text-center font-bold ${row.highlight ? "text-blue-700" : "text-slate-800"}`}>{row.per}</td>
+                                    <td className={`py-3 px-4 text-center font-semibold ${row.save === "—" ? "text-slate-300" : "text-emerald-600"}`}>{row.save}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* ── Payment Methods ── */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+                <h2 className="text-xl font-bold text-blue-950 font-serif mb-2">Accepted Payment Methods</h2>
+                <p className="text-slate-500 text-sm mb-6">Secure and flexible payments for students worldwide.</p>
+                <div className="grid sm:grid-cols-3 gap-4">
+                    {[
+                        { icon: CreditCard, title: "Debit / Credit Card", desc: "Visa, Mastercard and more." },
+                        { icon: Globe, title: "Global Transfer", desc: "Remitly, Wise, Western Union." },
+                        { icon: Building, title: "Bank Transfer", desc: "Available in selected regions." },
+                    ].map((m, i) => (
+                        <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                                <m.icon className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-slate-800 text-sm">{m.title}</p>
+                                <p className="text-xs text-slate-500">{m.desc}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl text-sm text-blue-800 text-center">
+                    Need a custom family plan? <Link href="/contact" className="font-bold underline hover:text-blue-600">Contact us</Link> for special discounts.
+                </div>
+            </div>
         </div>
     );
 }
