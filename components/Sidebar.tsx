@@ -24,7 +24,7 @@ export function Sidebar({ items, title, subtitle, className }: SidebarProps) {
 
     return (
         <div className={cn("hidden md:flex flex-col w-64 min-h-screen flex-shrink-0", className)}
-            style={{ background: "linear-gradient(180deg, #003527 0%, #004d3a 60%, #003027 100%)" }}>
+            style={{ background: "linear-gradient(180deg, #0f172a 0%, #1e3a5f 60%, #0f1f3a 100%)" }}>
 
             {/* Logo & Title */}
             <div className="px-6 pt-8 pb-6 border-b border-white/10">

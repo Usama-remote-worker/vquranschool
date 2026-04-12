@@ -27,10 +27,24 @@ export function Navbar() {
                     <Link href="/about" className="text-[13px] font-semibold tracking-wide uppercase text-slate-600 hover:text-blue-600 transition-colors">Academy</Link>
                     <Link href="/courses" className="text-[13px] font-semibold tracking-wide uppercase text-slate-600 hover:text-blue-600 transition-colors">Curriculum</Link>
                     <Link href="/teachers" className="text-[13px] font-semibold tracking-wide uppercase text-slate-600 hover:text-blue-600 transition-colors">Faculty</Link>
+                    <Link href="/pricing" className="text-[13px] font-semibold tracking-wide uppercase text-slate-600 hover:text-blue-600 transition-colors">Pricing</Link>
                     <Link href="/contact" className="text-[13px] font-semibold tracking-wide uppercase text-slate-600 hover:text-blue-600 transition-colors">Contact</Link>
                 </div>
 
                 <div className="flex items-center gap-3">
+                    {session ? (
+                        <Link href="/dashboard">
+                            <Button variant="outline" className="rounded-full h-10 px-6 font-medium border-blue-200 text-blue-700 hover:bg-blue-50 transition-all">
+                                Dashboard
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Link href="/login">
+                            <Button variant="outline" className="rounded-full h-10 px-6 font-medium border-slate-200 text-slate-700 hover:bg-slate-50 transition-all">
+                                Login
+                            </Button>
+                        </Link>
+                    )}
                     <Link href="/book-trial">
                         <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-10 px-6 font-medium shadow-md shadow-blue-600/20 transition-all hover:translate-y-[-1px]">
                             Book Trial

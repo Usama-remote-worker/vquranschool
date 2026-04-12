@@ -69,16 +69,16 @@ export default function AdminDashboard() {
             label: "Total Students",
             value: loading ? "—" : studentCount,
             icon: Users,
-            color: "#003527",
-            bg: "rgba(0,53,39,0.08)",
+            color: "#1e40af",
+            bg: "rgba(30,64,175,0.08)",
             trend: "Enrolled learners",
         },
         {
             label: "Total Teachers",
             value: loading ? "—" : teacherCount,
             icon: GraduationCap,
-            color: "#004d3a",
-            bg: "rgba(0,77,58,0.08)",
+            color: "#1e3a5f",
+            bg: "rgba(30,58,95,0.08)",
             trend: `${pendingTeachers.length} pending approval`,
         },
         {
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
                     onClick={fetchData}
                     disabled={loading}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all hover:shadow-sm"
-                    style={{ borderColor: "#c8d8d2", color: "#003527", background: "white" }}
+                    style={{ borderColor: "#cbd5e1", color: "#1e40af", background: "white" }}
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                     Refresh
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
                 {stats.map((stat) => (
                     <div key={stat.label}
                         className="rounded-2xl p-5 border transition-all hover:shadow-md hover:-translate-y-0.5 duration-200"
-                        style={{ background: "white", borderColor: "#e0eae6" }}
+                        style={{ background: "white", borderColor: "#e2e8f0" }}
                     >
                         <div className="flex items-start justify-between mb-4">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -154,37 +154,37 @@ export default function AdminDashboard() {
 
                 {/* Pending Teacher Applications */}
                 <div className="rounded-2xl border overflow-hidden flex flex-col"
-                    style={{ background: "white", borderColor: "#e0eae6" }}>
+                    style={{ background: "white", borderColor: "#e2e8f0" }}>
                     <div className="px-6 py-5 border-b flex items-center justify-between"
-                        style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                        style={{ borderColor: "#f1f5f9", background: "#f8fafc" }}>
                         <div>
-                            <h2 className="font-bold text-base" style={{ color: "#0d1c18" }}>
+                            <h2 className="font-bold text-base" style={{ color: "#0f172a" }}>
                                 Pending Applications
                             </h2>
-                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                            <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
                                 Teachers awaiting approval
                             </p>
                         </div>
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                            style={{ background: "rgba(0,53,39,0.08)" }}>
-                            <UserCog className="w-4 h-4" style={{ color: "#003527" }} />
+                            style={{ background: "rgba(30,64,175,0.08)" }}>
+                            <UserCog className="w-4 h-4" style={{ color: "#1e40af" }} />
                         </div>
                     </div>
 
                     <div className="flex-1">
                         {loading ? (
                             <div className="flex items-center justify-center py-12">
-                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#003527" }} />
-                                <span className="text-sm" style={{ color: "#7a9890" }}>Loading...</span>
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#1e40af" }} />
+                                <span className="text-sm" style={{ color: "#64748b" }}>Loading...</span>
                             </div>
                         ) : pendingTeachers.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
                                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
                                     style={{ background: "rgba(0,53,39,0.06)" }}>
-                                    <Check className="w-6 h-6" style={{ color: "#003527" }} />
+                                    <Check className="w-6 h-6" style={{ color: "#1e40af" }} />
                                 </div>
-                                <p className="text-sm font-medium" style={{ color: "#0d1c18" }}>All caught up!</p>
-                                <p className="text-xs mt-1" style={{ color: "#7a9890" }}>No pending teacher applications.</p>
+                                <p className="text-sm font-medium" style={{ color: "#0f172a" }}>All caught up!</p>
+                                <p className="text-xs mt-1" style={{ color: "#64748b" }}>No pending teacher applications.</p>
                             </div>
                         ) : (
                             <ul>
@@ -193,10 +193,10 @@ export default function AdminDashboard() {
                                         className="px-6 py-4 flex items-center justify-between gap-4 border-b last:border-0 transition-colors hover:bg-slate-50/50"
                                         style={{ borderColor: "#f0f5f3" }}>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-semibold truncate" style={{ color: "#0d1c18" }}>
+                                            <p className="text-sm font-semibold truncate" style={{ color: "#0f172a" }}>
                                                 {teacher.name}
                                             </p>
-                                            <p className="text-xs mt-0.5 truncate" style={{ color: "#7a9890" }}>
+                                            <p className="text-xs mt-0.5 truncate" style={{ color: "#64748b" }}>
                                                 {teacher.specialization || teacher.qualification || teacher.email}
                                             </p>
                                         </div>
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                                                 disabled={actionId === teacher.id}
                                                 onClick={() => handleTeacherAction(teacher.id, "approved")}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
-                                                style={{ background: "#003527" }}
+                                                style={{ background: "#1e3a8a" }}
                                             >
                                                 {actionId === teacher.id
                                                     ? <Loader2 className="w-3 h-3 animate-spin" />
@@ -227,10 +227,10 @@ export default function AdminDashboard() {
                         )}
                     </div>
 
-                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f1f5f9", background: "#f8fafc" }}>
                         <Link href="/dashboard/admin/teachers"
                             className="flex items-center justify-center gap-1.5 text-sm font-semibold group"
-                            style={{ color: "#003527" }}>
+                            style={{ color: "#1e40af" }}>
                             Manage All Teachers
                             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
@@ -239,14 +239,14 @@ export default function AdminDashboard() {
 
                 {/* Recent Trial Requests */}
                 <div className="rounded-2xl border overflow-hidden flex flex-col"
-                    style={{ background: "white", borderColor: "#e0eae6" }}>
+                    style={{ background: "white", borderColor: "#e2e8f0" }}>
                     <div className="px-6 py-5 border-b flex items-center justify-between"
-                        style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                        style={{ borderColor: "#f1f5f9", background: "#f8fafc" }}>
                         <div>
-                            <h2 className="font-bold text-base" style={{ color: "#0d1c18" }}>
+                            <h2 className="font-bold text-base" style={{ color: "#0f172a" }}>
                                 Recent Trial Requests
                             </h2>
-                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                            <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
                                 Latest prospective students
                             </p>
                         </div>
@@ -259,8 +259,8 @@ export default function AdminDashboard() {
                     <div className="flex-1">
                         {loading ? (
                             <div className="flex items-center justify-center py-12">
-                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#003527" }} />
-                                <span className="text-sm" style={{ color: "#7a9890" }}>Loading...</span>
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#1e40af" }} />
+                                <span className="text-sm" style={{ color: "#64748b" }}>Loading...</span>
                             </div>
                         ) : trialRequests.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
@@ -268,8 +268,8 @@ export default function AdminDashboard() {
                                     style={{ background: "rgba(212,175,55,0.08)" }}>
                                     <Inbox className="w-6 h-6" style={{ color: "#D4AF37" }} />
                                 </div>
-                                <p className="text-sm font-medium" style={{ color: "#0d1c18" }}>No requests yet</p>
-                                <p className="text-xs mt-1" style={{ color: "#7a9890" }}>Trial bookings will appear here.</p>
+                                <p className="text-sm font-medium" style={{ color: "#0f172a" }}>No requests yet</p>
+                                <p className="text-xs mt-1" style={{ color: "#64748b" }}>Trial bookings will appear here.</p>
                             </div>
                         ) : (
                             <ul>
@@ -279,7 +279,7 @@ export default function AdminDashboard() {
                                         style={{ borderColor: "#f0f5f3" }}>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <p className="text-sm font-semibold truncate" style={{ color: "#0d1c18" }}>
+                                                <p className="text-sm font-semibold truncate" style={{ color: "#0f172a" }}>
                                                     {trial.name}
                                                 </p>
                                                 <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
@@ -294,13 +294,13 @@ export default function AdminDashboard() {
                                                     {trial.status}
                                                 </span>
                                             </div>
-                                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                                            <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
                                                 {trial.course} · {trial.country}
                                             </p>
                                         </div>
                                         <Link href="/dashboard/admin/trials">
                                             <button className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover:opacity-80"
-                                                style={{ color: "#003527", background: "rgba(0,53,39,0.07)" }}>
+                                                style={{ color: "#1e40af", background: "rgba(30,64,175,0.07)" }}>
                                                 View <ChevronRight className="w-3 h-3" />
                                             </button>
                                         </Link>
@@ -310,10 +310,10 @@ export default function AdminDashboard() {
                         )}
                     </div>
 
-                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f1f5f9", background: "#f8fafc" }}>
                         <Link href="/dashboard/admin/trials"
                             className="flex items-center justify-center gap-1.5 text-sm font-semibold group"
-                            style={{ color: "#003527" }}>
+                            style={{ color: "#1e40af" }}>
                             View All Trial Requests
                             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
@@ -322,8 +322,8 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="rounded-2xl border p-6" style={{ background: "white", borderColor: "#e0eae6" }}>
-                <h2 className="font-bold text-base mb-4" style={{ color: "#0d1c18" }}>Quick Actions</h2>
+            <div className="rounded-2xl border p-6" style={{ background: "white", borderColor: "#e2e8f0" }}>
+                <h2 className="font-bold text-base mb-4" style={{ color: "#0f172a" }}>Quick Actions</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     {[
                         { label: "Manage Teachers", href: "/dashboard/admin/teachers", icon: UserCog },
@@ -336,10 +336,10 @@ export default function AdminDashboard() {
                             className="flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all hover:shadow-md hover:-translate-y-0.5 duration-200 group"
                             style={{ borderColor: "#e0eae6", background: "#fafcfb" }}>
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:scale-110 duration-200"
-                                style={{ background: "rgba(0,53,39,0.08)" }}>
-                                <action.icon className="w-5 h-5" style={{ color: "#003527" }} />
+                                style={{ background: "rgba(30,64,175,0.08)" }}>
+                                <action.icon className="w-5 h-5" style={{ color: "#1e40af" }} />
                             </div>
-                            <span className="text-xs font-semibold" style={{ color: "#0d1c18" }}>
+                            <span className="text-xs font-semibold" style={{ color: "#0f172a" }}>
                                 {action.label}
                             </span>
                         </Link>

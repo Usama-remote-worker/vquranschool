@@ -9,20 +9,23 @@ export default function PricingPage() {
             name: "Monthly Plan",
             price: "$99",
             frequency: "/ month",
+            perSession: "$4.95",
+            sessionsNote: "20 sessions/month",
             description: "Flexible month-to-month learning.",
             features: [
                 "5 Classes per week",
                 "30 minutes per class",
-                "Only $5 per class!",
                 "Daily Quran Reading",
                 "Basic Tajweed Rules",
             ],
             recommended: false
         },
         {
-            name: "Quarterly Plan (3 Months)",
+            name: "Quarterly Plan",
             price: "$270",
             frequency: "/ 3 months",
+            perSession: "$4.50",
+            sessionsNote: "60 sessions total · Save $27",
             description: "Our most popular plan. Save $27!",
             features: [
                 "5 Classes per week",
@@ -34,10 +37,12 @@ export default function PricingPage() {
             recommended: true
         },
         {
-            name: "Semi-Annual Plan (6 Months)",
+            name: "Semi-Annual Plan",
             price: "$510",
             frequency: "/ 6 months",
-            description: "Best value for dedicated, long-term students. Save $84!",
+            perSession: "$4.25",
+            sessionsNote: "120 sessions total · Save $84",
+            description: "Best value for long-term students. Save $84!",
             features: [
                 "5 Classes per week",
                 "30 minutes per class",
@@ -71,9 +76,15 @@ export default function PricingPage() {
                                     <h3 className="text-2xl font-bold text-blue-950 font-serif mb-2">{plan.name}</h3>
                                     <p className="text-slate-500 font-light text-sm">{plan.description}</p>
                                 </div>
-                                <div className="mb-8">
-                                    <span className="text-5xl font-extrabold text-blue-600">{plan.price}</span>
-                                    <span className="text-slate-500 font-medium">{plan.frequency}</span>
+                                <div className="mb-6">
+                                    <span className="text-4xl font-extrabold text-blue-600">{plan.price}</span>
+                                    <span className="text-slate-500 font-medium ml-1">{plan.frequency}</span>
+                                    {/* Per session highlight */}
+                                    <div className="flex items-center gap-2 mt-3 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
+                                        <span className="text-blue-700 font-bold text-lg">{(plan as any).perSession}</span>
+                                        <span className="text-blue-600 text-sm font-medium">/ session</span>
+                                        <span className="ml-auto text-xs text-slate-400">{(plan as any).sessionsNote}</span>
+                                    </div>
                                 </div>
                                 <ul className="space-y-4 mb-8 flex-1">
                                     {plan.features.map((feature, i) => (
