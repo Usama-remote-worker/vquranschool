@@ -9,7 +9,7 @@ export default function AdminDashboardLayout({
     children: React.ReactNode;
 }) {
     const sidebarItems = [
-        { title: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+        { title: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
         { title: "Teachers", href: "/dashboard/admin/teachers", icon: UserCog },
         { title: "Students", href: "/dashboard/admin/students", icon: Users },
         { title: "Courses", href: "/dashboard/admin/courses", icon: BookOpen },
@@ -18,10 +18,12 @@ export default function AdminDashboardLayout({
     ];
 
     return (
-        <div className="flex bg-slate-50 min-h-[calc(100vh-4rem)]">
-            <Sidebar items={sidebarItems} title="Admin Panel" />
-            <main className="flex-1 p-8 overflow-y-auto w-full max-w-7xl mx-auto">
-                {children}
+        <div className="flex min-h-screen" style={{ background: "#f0f2f1" }}>
+            <Sidebar items={sidebarItems} title="vQuranSchool" subtitle="Admin Control Panel" />
+            <main className="flex-1 overflow-y-auto">
+                <div className="max-w-7xl mx-auto p-8">
+                    {children}
+                </div>
             </main>
         </div>
     );

@@ -18,7 +18,7 @@ export default function StudentDashboardLayout({
     ];
 
     return (
-        <div className="flex bg-slate-50 min-h-[calc(100vh-4rem)]">
+        <div className="flex bg-slate-50 min-h-screen">
             <Sidebar items={sidebarItems} title="Student Portal" />
             <main className="flex-1 p-8 overflow-y-auto w-full max-w-7xl mx-auto">
                 {children}

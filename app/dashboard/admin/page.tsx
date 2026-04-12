@@ -1,13 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserCog, Inbox, Check, X, Loader2, ArrowRight, Users, GraduationCap, BookOpen } from "lucide-react";
+import {
+    UserCog, Inbox, Check, X, Loader2, ArrowRight,
+    Users, GraduationCap, BookOpen, TrendingUp, Clock,
+    RefreshCw, ChevronRight, AlertCircle
+} from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashboard() {
     const [pendingTeachers, setPendingTeachers] = useState<any[]>([]);
     const [trialRequests, setTrialRequests] = useState<any[]>([]);
+    const [allUsers, setAllUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionId, setActionId] = useState<string | null>(null);
 
@@ -15,18 +19,18 @@ export default function AdminDashboard() {
         setLoading(true);
         try {
             const [usersRes, trialsRes] = await Promise.all([
-                fetch('/api/admin/users'),
-                fetch('/api/admin/trials')
+                fetch("/api/admin/users"),
+                fetch("/api/admin/trials"),
             ]);
-            
             const usersData = await usersRes.json();
             const trialsData = await trialsRes.json();
-            
+
             if (usersData.users) {
-                setPendingTeachers(usersData.users.filter((u: any) => u.role === 'teacher' && u.status === 'pending'));
+                setAllUsers(usersData.users);
+                setPendingTeachers(usersData.users.filter((u: any) => u.role === "teacher" && u.status === "pending"));
             }
             if (trialsData.trials) {
-                setTrialRequests(trialsData.trials.slice(0, 5)); // Just take the 5 most recent
+                setTrialRequests(trialsData.trials);
             }
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -35,21 +39,18 @@ export default function AdminDashboard() {
         }
     };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    useEffect(() => { fetchData(); }, []);
 
-    const handleTeacherAction = async (teacherId: string, action: 'approved' | 'rejected') => {
+    const handleTeacherAction = async (teacherId: string, action: "approved" | "rejected") => {
         setActionId(teacherId);
         try {
-            const res = await fetch('/api/teachers/approve', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ teacher_id: teacherId, action })
+            const res = await fetch("/api/teachers/approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teacher_id: teacherId, action }),
             });
-
             if (res.ok) {
-                setPendingTeachers(prev => prev.filter(t => t.id !== teacherId));
+                setPendingTeachers((prev) => prev.filter((t) => t.id !== teacherId));
             }
         } catch (error) {
             console.error("Error updating teacher status:", error);
@@ -58,161 +59,292 @@ export default function AdminDashboard() {
         }
     };
 
+    const studentCount = allUsers.filter((u) => u.role === "student").length;
+    const teacherCount = allUsers.filter((u) => u.role === "teacher").length;
+    const newTrials = trialRequests.filter((t) => t.status === "new").length;
+    const contactedTrials = trialRequests.filter((t) => t.status === "contacted").length;
+
+    const stats = [
+        {
+            label: "Total Students",
+            value: loading ? "—" : studentCount,
+            icon: Users,
+            color: "#003527",
+            bg: "rgba(0,53,39,0.08)",
+            trend: "Enrolled learners",
+        },
+        {
+            label: "Total Teachers",
+            value: loading ? "—" : teacherCount,
+            icon: GraduationCap,
+            color: "#004d3a",
+            bg: "rgba(0,77,58,0.08)",
+            trend: `${pendingTeachers.length} pending approval`,
+        },
+        {
+            label: "Trial Requests",
+            value: loading ? "—" : trialRequests.length,
+            icon: Inbox,
+            color: "#D4AF37",
+            bg: "rgba(212,175,55,0.1)",
+            trend: `${newTrials} new · ${contactedTrials} contacted`,
+        },
+        {
+            label: "Pending Actions",
+            value: loading ? "—" : pendingTeachers.length + newTrials,
+            icon: AlertCircle,
+            color: "#b45309",
+            bg: "rgba(180,83,9,0.08)",
+            trend: "Require your attention",
+        },
+    ];
+
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Admin Control Panel</h1>
-                <p className="text-slate-500 mt-2">Manage users, approve teachers, and oversee all platform activity.</p>
+            {/* Header */}
+            <div className="flex items-start justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight" style={{ color: "#0d1c18" }}>
+                        Dashboard Overview
+                    </h1>
+                    <p className="mt-1.5 text-sm" style={{ color: "#5a7068" }}>
+                        Welcome back, Admin. Here's what's happening at vQuranSchool.
+                    </p>
+                </div>
+                <button
+                    onClick={fetchData}
+                    disabled={loading}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all hover:shadow-sm"
+                    style={{ borderColor: "#c8d8d2", color: "#003527", background: "white" }}
+                >
+                    <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                    Refresh
+                </button>
             </div>
 
-            {/* Quick Stats Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
-                                <Users className="w-6 h-6" />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                {stats.map((stat) => (
+                    <div key={stat.label}
+                        className="rounded-2xl p-5 border transition-all hover:shadow-md hover:-translate-y-0.5 duration-200"
+                        style={{ background: "white", borderColor: "#e0eae6" }}
+                    >
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: stat.bg }}>
+                                <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
                             </div>
-                            <div>
-                                <p className="text-sm font-medium text-slate-500">Active Students</p>
-                                <p className="text-2xl font-bold text-slate-900">Live Data</p>
-                            </div>
+                            <TrendingUp className="w-4 h-4" style={{ color: "#a0b8b0" }} />
                         </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600">
-                                <GraduationCap className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-slate-500">Total Teachers</p>
-                                <p className="text-2xl font-bold text-slate-900">Live Data</p>
-                            </div>
+                        <div className="text-3xl font-bold mb-1" style={{ color: "#0d1c18" }}>
+                            {stat.value}
                         </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200 shadow-sm">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-amber-50 rounded-xl text-amber-600">
-                                <BookOpen className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-slate-500">Pending Trials</p>
-                                <p className="text-2xl font-bold text-slate-900">{trialRequests.filter(t => t.status === 'new').length}</p>
-                            </div>
+                        <div className="text-sm font-semibold mb-0.5" style={{ color: "#0d1c18" }}>
+                            {stat.label}
                         </div>
-                    </CardContent>
-                </Card>
+                        <div className="text-xs" style={{ color: "#7a9890" }}>
+                            {stat.trend}
+                        </div>
+                    </div>
+                ))}
             </div>
 
+            {/* Main Content Grid */}
             <div className="grid gap-6 lg:grid-cols-2">
+
                 {/* Pending Teacher Applications */}
-                <Card className="border-blue-100 shadow-sm flex flex-col">
-                    <CardHeader className="flex flex-row items-center justify-between pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-xl">
+                <div className="rounded-2xl border overflow-hidden flex flex-col"
+                    style={{ background: "white", borderColor: "#e0eae6" }}>
+                    <div className="px-6 py-5 border-b flex items-center justify-between"
+                        style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
                         <div>
-                            <CardTitle className="text-lg font-bold">Pending Applications</CardTitle>
-                            <CardDescription>New teachers waiting for approval</CardDescription>
+                            <h2 className="font-bold text-base" style={{ color: "#0d1c18" }}>
+                                Pending Applications
+                            </h2>
+                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                                Teachers awaiting approval
+                            </p>
                         </div>
-                        <UserCog className="h-5 w-5 text-blue-600" />
-                    </CardHeader>
-                    <CardContent className="p-0 flex-grow">
-                        <ul className="divide-y divide-slate-100">
-                            {loading ? (
-                                <li className="p-8 text-center text-slate-400">
-                                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-                                    Loading applications...
-                                </li>
-                            ) : pendingTeachers.length === 0 ? (
-                                <li className="p-8 text-center text-slate-500">No pending applications</li>
-                            ) : (
-                                pendingTeachers.map(teacher => (
-                                    <li key={teacher.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/30 transition-colors">
-                                        <div>
-                                            <h3 className="font-bold text-slate-800">{teacher.name}</h3>
-                                            <p className="text-xs text-slate-500 mt-0.5">{teacher.qualification}</p>
-                                            <p className="text-sm text-blue-600 font-medium mt-1">{teacher.specialization}</p>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                            style={{ background: "rgba(0,53,39,0.08)" }}>
+                            <UserCog className="w-4 h-4" style={{ color: "#003527" }} />
+                        </div>
+                    </div>
+
+                    <div className="flex-1">
+                        {loading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#003527" }} />
+                                <span className="text-sm" style={{ color: "#7a9890" }}>Loading...</span>
+                            </div>
+                        ) : pendingTeachers.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
+                                    style={{ background: "rgba(0,53,39,0.06)" }}>
+                                    <Check className="w-6 h-6" style={{ color: "#003527" }} />
+                                </div>
+                                <p className="text-sm font-medium" style={{ color: "#0d1c18" }}>All caught up!</p>
+                                <p className="text-xs mt-1" style={{ color: "#7a9890" }}>No pending teacher applications.</p>
+                            </div>
+                        ) : (
+                            <ul>
+                                {pendingTeachers.map((teacher) => (
+                                    <li key={teacher.id}
+                                        className="px-6 py-4 flex items-center justify-between gap-4 border-b last:border-0 transition-colors hover:bg-slate-50/50"
+                                        style={{ borderColor: "#f0f5f3" }}>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-semibold truncate" style={{ color: "#0d1c18" }}>
+                                                {teacher.name}
+                                            </p>
+                                            <p className="text-xs mt-0.5 truncate" style={{ color: "#7a9890" }}>
+                                                {teacher.specialization || teacher.qualification || teacher.email}
+                                            </p>
                                         </div>
-                                        <div className="flex gap-2 shrink-0">
-                                            <Button 
-                                                size="sm" 
-                                                className="bg-blue-600 hover:bg-blue-700 h-8 shadow-sm"
+                                        <div className="flex gap-2 flex-shrink-0">
+                                            <button
                                                 disabled={actionId === teacher.id}
-                                                onClick={() => handleTeacherAction(teacher.id, 'approved')}
+                                                onClick={() => handleTeacherAction(teacher.id, "approved")}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                                style={{ background: "#003527" }}
                                             >
-                                                {actionId === teacher.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 mr-1" />}
+                                                {actionId === teacher.id
+                                                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                                                    : <Check className="w-3 h-3" />}
                                                 Approve
-                                            </Button>
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                className="text-red-600 border-red-200 hover:bg-red-50 h-8 shadow-sm"
+                                            </button>
+                                            <button
                                                 disabled={actionId === teacher.id}
-                                                onClick={() => handleTeacherAction(teacher.id, 'rejected')}
+                                                onClick={() => handleTeacherAction(teacher.id, "rejected")}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50"
+                                                style={{ color: "#b91c1c", background: "#fef2f2", border: "1px solid #fecaca" }}
                                             >
-                                                <X className="w-4 h-4 mr-1" /> Reject
-                                            </Button>
+                                                <X className="w-3 h-3" /> Reject
+                                            </button>
                                         </div>
                                     </li>
-                                ))
-                            )}
-                        </ul>
-                    </CardContent>
-                    <div className="p-4 bg-slate-50/30 border-t border-slate-100 rounded-b-xl">
-                        <Link href="/dashboard/admin/teachers" className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-center gap-1 group">
-                            Manage All Teachers <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                        <Link href="/dashboard/admin/teachers"
+                            className="flex items-center justify-center gap-1.5 text-sm font-semibold group"
+                            style={{ color: "#003527" }}>
+                            Manage All Teachers
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
-                </Card>
+                </div>
 
                 {/* Recent Trial Requests */}
-                <Card className="border-blue-100 shadow-sm flex flex-col">
-                    <CardHeader className="flex flex-row items-center justify-between pb-4 bg-slate-50/50 border-b border-slate-100 rounded-t-xl">
+                <div className="rounded-2xl border overflow-hidden flex flex-col"
+                    style={{ background: "white", borderColor: "#e0eae6" }}>
+                    <div className="px-6 py-5 border-b flex items-center justify-between"
+                        style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
                         <div>
-                            <CardTitle className="text-lg font-bold">Recent Trial Requests</CardTitle>
-                            <CardDescription>Latest prospective students</CardDescription>
+                            <h2 className="font-bold text-base" style={{ color: "#0d1c18" }}>
+                                Recent Trial Requests
+                            </h2>
+                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                                Latest prospective students
+                            </p>
                         </div>
-                        <Inbox className="h-5 w-5 text-blue-600" />
-                    </CardHeader>
-                    <CardContent className="p-0 flex-grow">
-                        <ul className="divide-y divide-slate-100">
-                            {loading ? (
-                                <li className="p-8 text-center text-slate-400">
-                                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-                                    Loading requests...
-                                </li>
-                            ) : trialRequests.length === 0 ? (
-                                <li className="p-8 text-center text-slate-500">No trial requests found</li>
-                            ) : (
-                                trialRequests.map(trial => (
-                                    <li key={trial.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/30 transition-colors">
-                                        <div>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                            style={{ background: "rgba(212,175,55,0.12)" }}>
+                            <Inbox className="w-4 h-4" style={{ color: "#D4AF37" }} />
+                        </div>
+                    </div>
+
+                    <div className="flex-1">
+                        {loading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <Loader2 className="w-5 h-5 animate-spin mr-2" style={{ color: "#003527" }} />
+                                <span className="text-sm" style={{ color: "#7a9890" }}>Loading...</span>
+                            </div>
+                        ) : trialRequests.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
+                                    style={{ background: "rgba(212,175,55,0.08)" }}>
+                                    <Inbox className="w-6 h-6" style={{ color: "#D4AF37" }} />
+                                </div>
+                                <p className="text-sm font-medium" style={{ color: "#0d1c18" }}>No requests yet</p>
+                                <p className="text-xs mt-1" style={{ color: "#7a9890" }}>Trial bookings will appear here.</p>
+                            </div>
+                        ) : (
+                            <ul>
+                                {trialRequests.slice(0, 6).map((trial) => (
+                                    <li key={trial.id}
+                                        className="px-6 py-4 flex items-center justify-between gap-4 border-b last:border-0 transition-colors hover:bg-slate-50/50"
+                                        style={{ borderColor: "#f0f5f3" }}>
+                                        <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <h3 className="font-bold text-slate-800">{trial.name}</h3>
-                                                <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${trial.status === 'new' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                <p className="text-sm font-semibold truncate" style={{ color: "#0d1c18" }}>
+                                                    {trial.name}
+                                                </p>
+                                                <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                                                    trial.status === "new"
+                                                        ? "bg-amber-50 text-amber-700"
+                                                        : trial.status === "contacted"
+                                                        ? "bg-blue-50 text-blue-700"
+                                                        : trial.status === "assigned"
+                                                        ? "bg-green-50 text-green-700"
+                                                        : "bg-slate-100 text-slate-600"
+                                                }`}>
                                                     {trial.status}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-slate-500 mt-0.5 italic">{trial.course}</p>
+                                            <p className="text-xs mt-0.5" style={{ color: "#7a9890" }}>
+                                                {trial.course} · {trial.country}
+                                            </p>
                                         </div>
                                         <Link href="/dashboard/admin/trials">
-                                            <Button size="sm" variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 shrink-0 h-8 shadow-sm">
-                                                Process Request
-                                            </Button>
+                                            <button className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover:opacity-80"
+                                                style={{ color: "#003527", background: "rgba(0,53,39,0.07)" }}>
+                                                View <ChevronRight className="w-3 h-3" />
+                                            </button>
                                         </Link>
                                     </li>
-                                ))
-                            )}
-                        </ul>
-                    </CardContent>
-                    <div className="p-4 bg-slate-50/30 border-t border-slate-100 rounded-b-xl">
-                        <Link href="/dashboard/admin/trials" className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-center gap-1 group">
-                            View All Requests <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="px-6 py-4 border-t" style={{ borderColor: "#f0f5f3", background: "#fafcfb" }}>
+                        <Link href="/dashboard/admin/trials"
+                            className="flex items-center justify-center gap-1.5 text-sm font-semibold group"
+                            style={{ color: "#003527" }}>
+                            View All Trial Requests
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
-                </Card>
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="rounded-2xl border p-6" style={{ background: "white", borderColor: "#e0eae6" }}>
+                <h2 className="font-bold text-base mb-4" style={{ color: "#0d1c18" }}>Quick Actions</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {[
+                        { label: "Manage Teachers", href: "/dashboard/admin/teachers", icon: UserCog },
+                        { label: "Manage Students", href: "/dashboard/admin/students", icon: Users },
+                        { label: "Manage Courses", href: "/dashboard/admin/courses", icon: BookOpen },
+                        { label: "Trial Requests", href: "/dashboard/admin/trials", icon: Inbox },
+                        { label: "Security", href: "/dashboard/admin/security", icon: Clock },
+                    ].map((action) => (
+                        <Link key={action.href} href={action.href}
+                            className="flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all hover:shadow-md hover:-translate-y-0.5 duration-200 group"
+                            style={{ borderColor: "#e0eae6", background: "#fafcfb" }}>
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:scale-110 duration-200"
+                                style={{ background: "rgba(0,53,39,0.08)" }}>
+                                <action.icon className="w-5 h-5" style={{ color: "#003527" }} />
+                            </div>
+                            <span className="text-xs font-semibold" style={{ color: "#0d1c18" }}>
+                                {action.label}
+                            </span>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, LogOut, ChevronRight } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export interface SidebarItem {
     title: string;
@@ -14,18 +15,33 @@ export interface SidebarItem {
 interface SidebarProps {
     items: SidebarItem[];
     title: string;
+    subtitle?: string;
     className?: string;
 }
 
-export function Sidebar({ items, title, className }: SidebarProps) {
+export function Sidebar({ items, title, subtitle, className }: SidebarProps) {
     const pathname = usePathname();
 
     return (
-        <div className={cn("hidden md:flex flex-col w-64 border-r border-slate-200 bg-white min-h-[calc(100vh-4rem)] p-4", className)}>
-            <div className="mb-8 px-4">
-                <h2 className="text-xl font-bold tracking-tight text-blue-900">{title}</h2>
+        <div className={cn("hidden md:flex flex-col w-64 min-h-screen flex-shrink-0", className)}
+            style={{ background: "linear-gradient(180deg, #003527 0%, #004d3a 60%, #003027 100%)" }}>
+
+            {/* Logo & Title */}
+            <div className="px-6 pt-8 pb-6 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-bold"
+                        style={{ background: "rgba(212, 175, 55, 0.2)", border: "1px solid rgba(212, 175, 55, 0.4)" }}>
+                        <span style={{ color: "#D4AF37" }}>Q</span>
+                    </div>
+                    <div>
+                        <h2 className="text-white font-bold text-sm tracking-tight">{title}</h2>
+                        {subtitle && <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{subtitle}</p>}
+                    </div>
+                </div>
             </div>
-            <nav className="space-y-1">
+
+            {/* Navigation */}
+            <nav className="flex-1 px-3 py-5 space-y-0.5">
                 {items.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -33,18 +49,40 @@ export function Sidebar({ items, title, className }: SidebarProps) {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors",
+                                "group flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                                 isActive
-                                    ? "bg-blue-50 text-blue-700 font-semibold"
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-blue-600"
+                                    ? "text-white"
+                                    : "text-white/60 hover:text-white hover:bg-white/10"
                             )}
+                            style={isActive ? { background: "rgba(255,255,255,0.12)", backdropFilter: "blur(4px)" } : {}}
                         >
-                            {item.icon && <item.icon className="h-5 w-5" />}
-                            {item.title}
+                            <div className="flex items-center gap-3">
+                                {item.icon && (
+                                    <item.icon className={cn("h-[18px] w-[18px] flex-shrink-0 transition-colors",
+                                        isActive ? "text-amber-300" : "text-white/50 group-hover:text-white/80"
+                                    )} />
+                                )}
+                                {item.title}
+                            </div>
+                            {isActive && <ChevronRight className="w-3.5 h-3.5 text-amber-300/70" />}
                         </Link>
                     );
                 })}
             </nav>
+
+            {/* Divider */}
+            <div className="mx-4 h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
+
+            {/* Sign Out */}
+            <div className="px-3 py-4">
+                <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white/50 hover:text-red-300 hover:bg-red-900/20"
+                >
+                    <LogOut className="h-[18px] w-[18px] flex-shrink-0 transition-colors" />
+                    Sign Out
+                </button>
+            </div>
         </div>
     );
 }

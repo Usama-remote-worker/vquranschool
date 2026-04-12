@@ -16,7 +16,7 @@ export default function TeacherDashboardLayout({
     ];
 
     return (
-        <div className="flex bg-slate-50 min-h-[calc(100vh-4rem)]">
+        <div className="flex bg-slate-50 min-h-screen">
             <Sidebar items={sidebarItems} title="Teacher Portal" />
             <main className="flex-1 p-8 overflow-y-auto w-full max-w-7xl mx-auto">
                 {children}

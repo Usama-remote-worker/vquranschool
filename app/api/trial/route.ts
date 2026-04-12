@@ -21,6 +21,14 @@ export async function POST(req: Request) {
             throw new Error('Failed to create trial booking');
         }
 
+        // Notify Admin
+        try {
+            const { sendAdminNotification } = await import('@/lib/notifications');
+            await sendAdminNotification('trial', { name, email, country, whatsapp, course });
+        } catch (notifierError) {
+            console.error("Admin notification failed, but booking succeeded:", notifierError);
+        }
+
         return NextResponse.json(
             { message: 'Trial booking successfully submitted', bookingId: rows[0].id },
             { status: 201 }

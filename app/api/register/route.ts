@@ -69,6 +69,14 @@ export async function POST(req: Request) {
             `;
         }
 
+        // 3. Notify Admin
+        try {
+            const { sendAdminNotification } = await import('@/lib/notifications');
+            await sendAdminNotification(role === 'teacher' ? 'teacher' : 'student', { name, email, ...rest });
+        } catch (notifierError) {
+            console.error("Admin notification failed, but registration succeeded:", notifierError);
+        }
+
         return NextResponse.json(
             { message: 'Registration successful', userId: user.id },
             { status: 201 }

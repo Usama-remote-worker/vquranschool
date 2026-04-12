@@ -20,18 +20,12 @@ export const authOptions: NextAuthOptions = {
                     const email = credentials.email.toLowerCase().trim();
                     const password = credentials.password.trim();
 
-                    // Check for mock accounts first (useful for development/testing/demo)
-                    if (email === "admin@quranacademy.com" && password === "admin123") {
-                        return { id: "admin-1", name: "Admin User", email: "admin@quranacademy.com", role: "admin" };
-                    }
-                    if (email === "student@quranacademy.com" && password === "student123") {
-                        return { id: "student-1", name: "Student User", email: "student@quranacademy.com", role: "student" };
-                    }
-                    if (email === "teacher@quranacademy.com" && password === "teacher123") {
-                        return { id: "teacher-1", name: "Teacher User", email: "teacher@quranacademy.com", role: "teacher" };
+                    // Temporary Admin Fallback for Development
+                    if (email === "admin@vquranschool.com" && password === "admin123") {
+                        return { id: "admin-temp", name: "Admin (Dev Mode)", email: "admin@vquranschool.com", role: "admin" };
                     }
 
-                    // Fetch the user from Vercel Postgres if not a mock account
+                    // Fetch the user from Vercel Postgres if not the dev admin
                     const { rows } = await sql`
                         SELECT * FROM Users WHERE LOWER(email) = ${email} LIMIT 1
                     `;

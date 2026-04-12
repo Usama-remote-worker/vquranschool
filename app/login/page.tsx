@@ -120,26 +120,6 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <div className="mt-8 text-xs text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <p className="font-semibold mb-3 text-slate-700">Demo Accounts:</p>
-                            <ul className="space-y-2">
-                                <li className="flex flex-wrap items-center gap-2">
-                                    <span className="w-16">Admin:</span>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">admin@quranacademy.com</code>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">admin123</code>
-                                </li>
-                                <li className="flex flex-wrap items-center gap-2">
-                                    <span className="w-16">Teacher:</span>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">teacher@quranacademy.com</code>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">teacher123</code>
-                                </li>
-                                <li className="flex flex-wrap items-center gap-2">
-                                    <span className="w-16">Student:</span>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">student@quranacademy.com</code>
-                                    <code className="bg-white px-2 py-1 rounded-md text-slate-700 border border-slate-200">student123</code>
-                                </li>
-                            </ul>
-                        </div>
                     </CardFooter>
                 </form>
             </Card>

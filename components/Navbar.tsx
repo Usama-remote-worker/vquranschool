@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 
 export function Navbar() {
     const { data: session } = useSession();
+    const pathname = usePathname();
+
+    if (pathname.startsWith("/dashboard")) {
+        return null;
+    }
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-xl shadow-sm supports-[backdrop-filter]:bg-white/60">
@@ -25,29 +31,11 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {session ? (
-                        <>
-                            <Link href={`/dashboard/${(session.user as any).role || 'student'}`}>
-                                <Button variant="outline" className="hidden sm:inline-flex border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 rounded-full font-medium h-10 px-6 transition-all bg-white">
-                                    Dashboard
-                                </Button>
-                            </Link>
-                            <Button variant="ghost" onClick={() => signOut()} className="rounded-full h-10 px-4 text-slate-600 hover:text-red-600 hover:bg-red-50">Log Out</Button>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/login">
-                                <Button variant="ghost" className="hidden sm:inline-flex font-medium text-slate-600 hover:text-blue-900 hover:bg-slate-100 rounded-full h-10 px-6 transition-all">
-                                    Log In
-                                </Button>
-                            </Link>
-                            <Link href="/book-trial">
-                                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-10 px-6 font-medium shadow-md shadow-blue-600/20 transition-all hover:translate-y-[-1px]">
-                                    Book Trial
-                                </Button>
-                            </Link>
-                        </>
-                    )}
+                    <Link href="/book-trial">
+                        <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-10 px-6 font-medium shadow-md shadow-blue-600/20 transition-all hover:translate-y-[-1px]">
+                            Book Trial
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </nav>

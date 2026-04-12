@@ -22,28 +22,28 @@ export default function StudentProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
-                                <Input id="name" defaultValue="Student User" />
+                                <Input id="name" placeholder="Enter your full name" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email Address</Label>
-                                <Input id="email" type="email" defaultValue="student@quranacademy.com" disabled />
+                                <Input id="email" type="email" placeholder="email@example.com" disabled />
                                 <p className="text-xs text-slate-400">Email cannot be changed directly.</p>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="age">Age</Label>
-                                <Input id="age" type="number" defaultValue="20" />
+                                <Input id="age" type="number" placeholder="0" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="whatsapp">WhatsApp Number</Label>
-                                <Input id="whatsapp" defaultValue="+1 (234) 567-890" />
+                                <Input id="whatsapp" placeholder="+1 (234) 567-890" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="country">Country</Label>
-                                <Input id="country" defaultValue="United Kingdom" />
+                                <Input id="country" placeholder="Enter your country" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="timezone">Timezone</Label>
-                                <Input id="timezone" defaultValue="GMT (London)" />
+                                <Input id="timezone" placeholder="e.g. GMT (London)" />
                             </div>
                         </div>
 

@@ -1,6 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+    const pathname = usePathname();
+
+    if (pathname.startsWith("/dashboard")) {
+        return null;
+    }
     return (
         <footer className="w-full py-16 bg-blue-950 text-blue-100 border-t border-blue-900">
             <div className="container mx-auto px-4 md:px-6">
@@ -19,6 +27,9 @@ export function Footer() {
                             <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
                             <li><Link href="/courses" className="hover:text-white transition-colors">Courses</Link></li>
                             <li><Link href="/teachers" className="hover:text-white transition-colors">Find a Teacher</Link></li>
+                            <li><Link href="/register-teacher" className="text-blue-400 font-semibold hover:text-blue-300 transition-colors italic group flex items-center gap-1">
+                                Become a Teacher <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+                            </Link></li>
                         </ul>
                     </div>
                     <div>
