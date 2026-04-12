@@ -32,8 +32,8 @@ export default function RegisterStudentPage() {
             const result = await res.json();
             if (!res.ok) throw new Error(result.error || 'Registration failed');
 
-            // Redirect to pricing so new students can explore packages
-            router.push("/pricing?registered=1");
+            alert("Registration successful! Please login to access your student dashboard.");
+            router.push("/login");
         } catch (error: any) {
             alert(error.message);
         } finally {
