@@ -21,7 +21,7 @@ export function Navbar() {
         { name: "About", href: "/about" },
         { name: "Courses", href: "/courses" },
         { name: "Teachers", href: "/teachers" },
-        { name: "Pricing", href: "/dashboard/student/pricing" },
+        { name: "Pricing", href: "/pricing" },
         { name: "Contact", href: "/contact" },
     ];
 

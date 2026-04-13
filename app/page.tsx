@@ -299,7 +299,7 @@ export default function Home() {
                   Book Your Free Trial Now
                 </Button>
               </Link>
-              <Link href="/dashboard/student/pricing">
+              <Link href="/pricing">
                 <Button variant="outline" className="h-14 px-10 text-lg font-bold border-blue-400 text-white hover:bg-white/10 rounded-full transition-all">
                   See Our Plans
                 </Button>
