@@ -41,7 +41,7 @@ export default function ContactPage() {
                 e.currentTarget.reset();
             } else {
                 console.error("Web3Forms Error:", result);
-                addToast("Something went wrong. Please email us directly at lisanquranacademy@gmail.com", "error");
+                addToast("Something went wrong. Please email us directly at support@vquranschool.com", "error");
             }
         } catch (error) {
             console.error("Fetch Error:", error);
@@ -96,7 +96,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <h4 className="text-xl font-bold text-blue-950 mb-2 font-serif">Email Address</h4>
-                                        <p className="text-slate-600 font-medium">lisanquranacademy@gmail.com</p>
+                                        <p className="text-slate-600 font-medium">support@vquranschool.com</p>
                                     </div>
                                 </div>
 

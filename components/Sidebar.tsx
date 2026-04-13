@@ -47,18 +47,17 @@ export function Sidebar({ items, title, subtitle, className }: SidebarProps) {
                 isOpen ? "translate-x-0" : "-translate-x-full",
                 className
             )}
-            style={{ background: "linear-gradient(180deg, #0f172a 0%, #1e3a5f 60%, #0f1f3a 100%)" }}>
+            style={{ background: "linear-gradient(180deg, #0f172a 0%, #1e293b 100%)" }}>
 
             {/* Logo & Title */}
-            <div className="px-6 pt-8 pb-6 border-b border-white/10 flex items-center justify-between">
+            <div className="px-6 pt-8 pb-6 border-b border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-bold"
-                        style={{ background: "rgba(212, 175, 55, 0.2)", border: "1px solid rgba(212, 175, 55, 0.4)" }}>
-                        <span style={{ color: "#D4AF37" }}>Q</span>
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-bold bg-blue-600/20 border border-blue-600/40">
+                        <span className="text-blue-500">Q</span>
                     </div>
                     <div>
                         <h2 className="text-white font-bold text-sm tracking-tight">{title}</h2>
-                        {subtitle && <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{subtitle}</p>}
+                        {subtitle && <p className="text-xs mt-0.5 text-slate-500">{subtitle}</p>}
                     </div>
                 </div>
                 <button onClick={() => setIsOpen(false)} className="md:hidden text-white/50 hover:text-white">
@@ -78,33 +77,32 @@ export function Sidebar({ items, title, subtitle, className }: SidebarProps) {
                             className={cn(
                                 "group flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                                 isActive
-                                    ? "text-white"
-                                    : "text-white/60 hover:text-white hover:bg-white/10"
+                                    ? "text-white bg-blue-600/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                                    : "text-slate-400 hover:text-white hover:bg-white/5"
                             )}
-                            style={isActive ? { background: "rgba(255,255,255,0.12)", backdropFilter: "blur(4px)" } : {}}
                         >
                             <div className="flex items-center gap-3">
                                 {item.icon && (
                                     <item.icon className={cn("h-[18px] w-[18px] flex-shrink-0 transition-colors",
-                                        isActive ? "text-amber-300" : "text-white/50 group-hover:text-white/80"
+                                        isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300"
                                     )} />
                                 )}
                                 {item.title}
                             </div>
-                            {isActive && <ChevronRight className="w-3.5 h-3.5 text-amber-300/70" />}
+                            {isActive && <ChevronRight className="w-3.5 h-3.5 text-blue-400/70" />}
                         </Link>
                     );
                 })}
             </nav>
 
             {/* Divider */}
-            <div className="mx-4 h-px" style={{ background: "rgba(255,255,255,0.1)" }} />
+            <div className="mx-4 h-px bg-white/5" />
 
             {/* Sign Out */}
             <div className="px-3 py-4">
                 <button
                     onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white/50 hover:text-red-300 hover:bg-red-900/20"
+                    className="w-full group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
                 >
                     <LogOut className="h-[18px] w-[18px] flex-shrink-0 transition-colors" />
                     Sign Out

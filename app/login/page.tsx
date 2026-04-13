@@ -32,6 +32,18 @@ export default function LoginPage() {
             setError("Invalid email or password");
             setLoading(false);
         } else {
+            // Check session to ensure it's not an admin
+            const sessionRes = await fetch('/api/auth/session');
+            const sessionData = await sessionRes.json();
+            
+            if (sessionData?.user?.role === 'admin') {
+                setError("This portal is for Students & Teachers only.");
+                setLoading(false);
+                // Force logout if they accidentally logged in
+                await fetch('/api/auth/signout', { method: 'POST' });
+                return;
+            }
+
             router.push("/dashboard");
             router.refresh();
         }
@@ -58,8 +70,8 @@ export default function LoginPage() {
                 <div className="absolute top-[0px] left-1/2 -translate-x-1/2 w-[80%] h-[5px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
 
                 <CardHeader className="space-y-3 text-center pb-8 border-b border-slate-100 bg-slate-50/50 mb-8 pt-10 px-8">
-                    <CardTitle className="text-3xl font-extrabold text-blue-950 tracking-tight font-serif">Welcome Back</CardTitle>
-                    <CardDescription className="text-base font-light text-slate-500">Login to your vquranschool account</CardDescription>
+                    <CardTitle className="text-3xl font-extrabold text-blue-950 tracking-tight font-serif">Student & Teacher Login</CardTitle>
+                    <CardDescription className="text-base font-light text-slate-500">Access your vquranschool classroom</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6 px-8 relative z-10">

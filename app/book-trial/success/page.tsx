@@ -83,8 +83,8 @@ export default function TrialSuccessPage() {
 
                 <p className="text-sm text-slate-400 font-light">
                     Any questions? Email us at{" "}
-                    <a href="mailto:lisanquranacademy@gmail.com" className="text-blue-600 hover:underline font-medium">
-                        lisanquranacademy@gmail.com
+                    <a href="mailto:support@vquranschool.com" className="text-blue-600 hover:underline font-medium">
+                        support@vquranschool.com
                     </a>
                 </p>
             </div>

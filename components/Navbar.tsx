@@ -59,9 +59,9 @@ export function Navbar() {
                     <div className="flex items-center gap-3">
                         <div className="hidden md:flex items-center gap-3">
                             {session ? (
-                                <Link href="/dashboard">
+                                <Link href="/login">
                                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700 rounded-full px-6">
-                                        Dashboard
+                                        Login
                                     </Button>
                                 </Link>
                             ) : (
@@ -110,9 +110,9 @@ export function Navbar() {
                         ))}
                         <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
                             {session ? (
-                                <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                                <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                                     <Button className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl">
-                                        Dashboard
+                                        Login
                                     </Button>
                                 </Link>
                             ) : (

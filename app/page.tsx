@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { TeacherCard } from "@/components/TeacherCard";
 import { CourseCard } from "@/components/CourseCard";
@@ -15,32 +16,25 @@ export default function Home() {
     { id: "3", title: "Quran Memorization (Hifz)", description: "Commit the Holy Quran to memory with our structured program.", level: "Advanced" },
   ];
 
-  const teachers = [
-    { 
-      id: "1", 
-      name: "Sheikh Ahmed Al-Farsi", 
-      specialization: "Hifz & Tajweed", 
-      qualification: "Ijazah from Al-Azhar", 
-      experience: 12, 
-      profile_photo: "https://images.unsplash.com/photo-1552058544-f2b08422138a?q=80&w=400&auto=format&fit=crop" 
-    },
-    { 
-      id: "2", 
-      name: "Ustadha Maryam Khan", 
-      specialization: "Qaida for Kids", 
-      qualification: "Islamic Studies Diploma", 
-      experience: 8, 
-      profile_photo: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2204?q=80&w=400&auto=format&fit=crop" 
-    },
-    { 
-      id: "3", 
-      name: "Sheikh Omar Hassan", 
-      specialization: "Arabic Grammar", 
-      qualification: "B.A. Islamic Law", 
-      experience: 10, 
-      profile_photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop" 
-    },
-  ];
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [loadingTeachers, setLoadingTeachers] = useState(true);
+
+  useEffect(() => {
+    async function fetchTeachers() {
+      try {
+        const res = await fetch('/api/teachers/public');
+        if (res.ok) {
+          const data = await res.json();
+          setTeachers(data);
+        }
+      } catch (err) {
+        console.error("Error fetching teachers:", err);
+      } finally {
+        setLoadingTeachers(false);
+      }
+    }
+    fetchTeachers();
+  }, []);
 
   const testimonials = [
     { name: "Saira K.", role: "Parent from UK", content: "My children have progressed so fast with vquranschool. The teachers are incredibly patient and the 1-on-1 focus is exactly what we needed.", stars: 5 },
@@ -209,17 +203,35 @@ export default function Home() {
             <p className="text-slate-600 text-lg font-light">Learn from the best certified scholars with years of experience in online teaching.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teachers.map((teacher, i) => (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                key={teacher.id}
-              >
-                <TeacherCard teacher={teacher} />
-              </motion.div>
-            ))}
+            {loadingTeachers ? (
+              [1, 2, 3].map((_, i) => (
+                <div key={i} className="h-80 rounded-3xl bg-white border border-slate-200 animate-pulse flex flex-col p-6 space-y-4">
+                  <div className="w-24 h-24 rounded-2xl bg-slate-100 mx-auto"></div>
+                  <div className="h-4 bg-slate-100 rounded w-3/4 mx-auto"></div>
+                  <div className="h-3 bg-slate-100 rounded w-1/2 mx-auto"></div>
+                  <div className="space-y-2 pt-4">
+                    <div className="h-3 bg-slate-50 rounded w-full"></div>
+                    <div className="h-3 bg-slate-50 rounded w-full"></div>
+                  </div>
+                </div>
+              ))
+            ) : teachers.length > 0 ? (
+              teachers.map((teacher, i) => (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  key={teacher.id || i}
+                >
+                  <TeacherCard teacher={teacher} />
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-1 md:col-span-3 text-center py-12 bg-white rounded-3xl border border-slate-200">
+                <p className="text-slate-500 font-light">More expert teachers are joining our academy soon.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

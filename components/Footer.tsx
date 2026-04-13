@@ -43,7 +43,7 @@ export function Footer() {
                     <div>
                         <h4 className="font-semibold text-white mb-6">Contact Info</h4>
                         <ul className="space-y-3 text-sm text-blue-200/80 font-light">
-                            <li>Email: lisanquranacademy@gmail.com</li>
+                            <li>Email: support@vquranschool.com</li>
                             <li>WhatsApp: +92 304 4296295</li>
                         </ul>
                     </div>
