@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import Link from "next/link";
 import Image from "next/image";
+import { useToast } from "@/components/ui/toast";
 
 export default function RegisterStudentPage() {
     const router = useRouter();
+    const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,10 +34,10 @@ export default function RegisterStudentPage() {
             const result = await res.json();
             if (!res.ok) throw new Error(result.error || 'Registration failed');
 
-            alert("Registration successful! Please login to access your student dashboard.");
+            addToast("Account created successfully! Please login to access your dashboard.", "success");
             router.push("/login");
         } catch (error: any) {
-            alert(error.message);
+            addToast(error.message || "Registration failed. Please try again.", "error");
         } finally {
             setLoading(false);
         }
@@ -62,8 +64,8 @@ export default function RegisterStudentPage() {
                 <div className="absolute top-[0px] left-1/2 -translate-x-1/2 w-[80%] h-[5px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
 
                 <CardHeader className="space-y-3 text-center pb-8 border-b border-slate-100 bg-slate-50/50 mb-8 pt-10 px-8">
-                    <CardTitle className="text-3xl font-extrabold text-blue-950 tracking-tight font-serif">Student Registration</CardTitle>
-                    <CardDescription className="text-base font-light text-slate-500">Create your account to start learning</CardDescription>
+                    <CardTitle className="text-3xl font-extrabold text-blue-950 tracking-tight font-serif">Create Student Account</CardTitle>
+                    <CardDescription className="text-base font-light text-slate-500">Join thousands of students learning Quran online</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6 px-8 relative z-10">

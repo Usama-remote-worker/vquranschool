@@ -3,6 +3,15 @@ import { useState } from "react";
 import { Check, CreditCard, Building, Globe, Zap, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { CourseCard } from "@/components/CourseCard";
+
+const courses = [
+    { id: "1", title: "Noorani Qaida", description: "Learn the basics of Arabic reading with proper pronunciation.", level: "Beginner" },
+    { id: "2", title: "Quran Reading (Nazra)", description: "Fluently read the Holy Quran with correct phonetics. Best after completing Qaida.", level: "Intermediate" },
+    { id: "3", title: "Quran Memorization (Hifz)", description: "Commit the Holy Quran to memory with our structured program and retention exercises.", level: "Advanced" },
+    { id: "4", title: "Tajweed Rules", description: "Master the intricate rules of recitation (Makharij & Sifat).", level: "Intermediate" },
+    { id: "5", title: "Islamic Studies for Kids", description: "Age-appropriate learning of basic Islamic principles, Dua and Fiqh.", level: "Beginner" },
+];
 
 // ─────────────────────────────────────────────────────────────
 // Pricing data: two frequency tiers × three duration plans
@@ -142,17 +151,44 @@ export default function PricingPage() {
     const currentTier = tiers.find((t) => t.id === activeTier)!;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-12 animate-in fade-in duration-500">
             {/* ── Header ── */}
             <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Pricing & Packages</h1>
-                <p className="text-slate-500 mt-1">Choose your session frequency and the plan duration that suits you best.</p>
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Courses & Pricing</h1>
+                <p className="text-slate-500 mt-2">Explore our available courses and select a convenient learning plan that fits your schedule.</p>
             </div>
 
-            {/* ── Frequency Toggle ── */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider shrink-0">Sessions per week:</p>
-                <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl">
+            {/* ── Courses Section ── */}
+            <div className="space-y-6">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+                        Available Courses
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-1 pl-8">Our expert teachers cover all these subjects during your live sessions. You can learn multiple subjects or switch at any time.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pl-8">
+                    {courses.map(course => (
+                        <CourseCard key={course.id} course={course} />
+                    ))}
+                </div>
+            </div>
+
+            {/* ── Pricing Section ── */}
+            <div className="space-y-6 pt-6 border-t border-slate-200">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+                        Select Your Plan
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-1 pl-8">Choose your session frequency and billing duration to get started.</p>
+                </div>
+
+                <div className="pl-8 space-y-6">
+                    {/* ── Frequency Toggle ── */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider shrink-0">Sessions per week:</p>
+                        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl">
                     {tiers.map((tier) => (
                         <button
                             key={tier.id}
@@ -261,7 +297,12 @@ export default function PricingPage() {
 
                         {/* CTA */}
                         <div className="px-7 pb-7">
-                            <Link href="/contact" className="block w-full">
+                            <a
+                                href={`https://wa.me/923044296295?text=${encodeURIComponent(`Assalamu Alaikum! I'd like to enroll in the *${plan.name} Plan* (${currentTier.label}) for $${plan.total.replace('$','')}${plan.frequency}. Please help me get started!`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full"
+                            >
                                 <Button
                                     className={`w-full h-12 rounded-xl font-bold text-base transition-all hover:scale-[1.02] ${
                                         plan.recommended
@@ -269,19 +310,20 @@ export default function PricingPage() {
                                             : "bg-slate-900 hover:bg-slate-800 text-white"
                                     }`}
                                 >
-                                    Get Started
+                                    Get Started — Chat Now 💬
                                 </Button>
-                            </Link>
+                            </a>
                             <p className="text-xs text-center text-slate-400 mt-2">
-                                Contact us to activate your plan
+                                We'll activate your plan via WhatsApp
                             </p>
                         </div>
                     </div>
                 ))}
             </div>
+            </div>
 
             {/* ── Quick comparison strip ── */}
-            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mt-8">
                 <div className="bg-blue-950 text-white px-6 py-4">
                     <h3 className="font-bold text-base">Per-Session Price Comparison</h3>
                     <p className="text-blue-300 text-xs mt-0.5">Longer commitment = lower cost per session</p>

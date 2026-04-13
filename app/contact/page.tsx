@@ -8,9 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useToast } from "@/components/ui/toast";
 
 export default function ContactPage() {
     const [loading, setLoading] = useState(false);
+    const { addToast } = useToast();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -35,15 +37,15 @@ export default function ContactPage() {
             const result = await response.json();
 
             if (result.success) {
-                alert("Message sent! We will get back to you soon.");
+                addToast("Message sent! We'll get back to you within 24 hours.", "success");
                 e.currentTarget.reset();
             } else {
                 console.error("Web3Forms Error:", result);
-                alert("Something went wrong. Please email us directly.");
+                addToast("Something went wrong. Please email us directly at lisanquranacademy@gmail.com", "error");
             }
         } catch (error) {
             console.error("Fetch Error:", error);
-            alert("Network error. Please try again later.");
+            addToast("Network error. Please try again later.", "error");
         } finally {
             setLoading(false);
         }

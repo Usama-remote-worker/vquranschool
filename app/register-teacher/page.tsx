@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import Link from "next/link";
 import Image from "next/image";
+import { useToast } from "@/components/ui/toast";
 
 export default function RegisterTeacherPage() {
     const router = useRouter();
+    const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,10 +34,10 @@ export default function RegisterTeacherPage() {
             const result = await res.json();
             if (!res.ok) throw new Error(result.error || 'Registration failed');
 
-            alert("Application submitted successfully! Our team will review and contact you.");
+            addToast("Application submitted! Our admin team will review and contact you shortly.", "success");
             router.push("/");
         } catch (error: any) {
-            alert(error.message);
+            addToast(error.message || "Submission failed. Please try again.", "error");
         } finally {
             setLoading(false);
         }

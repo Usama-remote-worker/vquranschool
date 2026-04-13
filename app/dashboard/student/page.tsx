@@ -3,31 +3,31 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, BookOpen, MessageSquare, Loader2, Video, LayoutDashboard, CreditCard, X, Sparkles, ChevronRight } from "lucide-react";
+import { Calendar, Clock, User, BookOpen, MessageSquare, Loader2, Video, LayoutDashboard, CreditCard, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function StudentDashboard() {
     const { data: session } = useSession();
     const [studentData, setStudentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [teacherName, setTeacherName] = useState<string | null>(null);
-    const [showPricingBanner, setShowPricingBanner] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchStudentInfo = async () => {
             if (!session?.user?.email) return;
             setLoading(true);
             try {
-                const res = await fetch('/api/admin/users');
+                const res = await fetch('/api/students/profile');
                 const data = await res.json();
-                if (data.users) {
-                    const me = data.users.find((u: any) => u.email === session.user?.email);
-                    if (me) {
-                        setStudentData(me);
-                        if (me.assigned_teacher) {
-                            const teacher = data.users.find((u: any) => u.id === me.assigned_teacher);
-                            if (teacher) setTeacherName(teacher.name);
-                        }
+                if (data.student) {
+                    setStudentData(data.student);
+                    setTeacherName(data.student.teacher_name);
+                    
+                    // Immediately redirect pending students to the pricing page
+                    if (data.student.status === 'pending') {
+                        router.replace('/dashboard/student/pricing');
                     }
                 }
             } catch (error) {
@@ -37,23 +37,7 @@ export default function StudentDashboard() {
             }
         };
         fetchStudentInfo();
-    }, [session]);
-
-    useEffect(() => {
-        // Show pricing banner for new (pending) students who haven't dismissed it yet
-        if (studentData?.status === 'pending') {
-            const dismissed = localStorage.getItem(`pricing_banner_dismissed_${studentData.id}`);
-            if (!dismissed) setShowPricingBanner(true);
-        }
-    }, [studentData]);
-
-    const dismissBanner = () => {
-        setShowPricingBanner(false);
-        if (studentData?.id) {
-            localStorage.setItem(`pricing_banner_dismissed_${studentData.id}`, 'true');
-        }
-    };
-
+    }, [session, router]);
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-500">
@@ -68,50 +52,6 @@ export default function StudentDashboard() {
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
-
-            {/* ── Welcome Banner (shown only to new/pending students) ── */}
-            {showPricingBanner && (
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white p-6 shadow-xl shadow-blue-900/20">
-                    {/* background decoration */}
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.12)_0%,_transparent_60%)] pointer-events-none" />
-                    <div className="absolute top-0 right-0 h-full w-1/3 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.04%3E%3Cpath d=M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30 pointer-events-none" />
-
-                    <button
-                        onClick={dismissBanner}
-                        className="absolute top-4 right-4 p-1.5 rounded-full bg-white/15 hover:bg-white/25 transition-colors z-10"
-                        aria-label="Dismiss"
-                    >
-                        <X className="w-4 h-4" />
-                    </button>
-
-                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                            <Sparkles className="w-6 h-6 text-yellow-300" />
-                        </div>
-                        <div className="flex-1">
-                            <p className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-1">Welcome to vQuranSchool!</p>
-                            <h2 className="text-xl font-bold mb-1">Choose the program that suits you best 🎓</h2>
-                            <p className="text-blue-100 text-sm leading-relaxed">
-                                We offer flexible plans — 3 or 5 live sessions per week. Pick what fits your schedule and start your Quran journey today.
-                            </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full md:w-auto">
-                            <Link href="/dashboard/student/pricing">
-                                <Button className="bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl h-11 px-6 w-full sm:w-auto shadow-lg shadow-blue-900/20 transition-all hover:scale-[1.02]">
-                                    <CreditCard className="w-4 h-4 mr-2" />
-                                    View All Plans
-                                </Button>
-                            </Link>
-                            <button
-                                onClick={dismissBanner}
-                                className="text-sm text-blue-200 hover:text-white font-medium transition-colors text-center"
-                            >
-                                Remind me later
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* ── Page Header ── */}
             <div>

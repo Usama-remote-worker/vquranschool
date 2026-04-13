@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { CalendarRange } from "lucide-react";
 import Image from "next/image";
+import { useToast } from "@/components/ui/toast";
 
 export default function BookTrialPage() {
     const router = useRouter();
+    const { addToast } = useToast();
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,15 +40,14 @@ export default function BookTrialPage() {
             });
 
             if (res.ok) {
-                alert("Trial request submitted! We will contact you via WhatsApp shortly to confirm the scheduled time.");
-                router.push("/");
+                router.push("/book-trial/success");
             } else {
                 const errorData = await res.json();
-                alert(`Error: ${errorData.error || "Failed to submit request"}`);
+                addToast(errorData.error || "Failed to submit request. Please try again.", "error");
             }
         } catch (error) {
             console.error("Error submitting trial form:", error);
-            alert("An unexpected error occurred. Please try again.");
+            addToast("An unexpected error occurred. Please try again.", "error");
         } finally {
             setLoading(false);
         }
@@ -134,7 +135,7 @@ export default function BookTrialPage() {
                             className="w-full h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-600/20 disabled:opacity-70 transition-all hover:scale-[1.02]"
                             disabled={loading}
                         >
-                            {loading ? "Submitting..." : "Schedule Trial"}
+                            {loading ? "Submitting your request..." : "📅 Book My Free Trial Class"}
                         </Button>
                     </CardFooter>
                 </form>

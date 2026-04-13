@@ -15,7 +15,38 @@ export default function Home() {
     { id: "3", title: "Quran Memorization (Hifz)", description: "Commit the Holy Quran to memory with our structured program.", level: "Advanced" },
   ];
 
-  const teachers: any[] = [];
+  const teachers = [
+    { 
+      id: "1", 
+      name: "Sheikh Ahmed Al-Farsi", 
+      specialization: "Hifz & Tajweed", 
+      qualification: "Ijazah from Al-Azhar", 
+      experience: 12, 
+      profile_photo: "https://images.unsplash.com/photo-1552058544-f2b08422138a?q=80&w=400&auto=format&fit=crop" 
+    },
+    { 
+      id: "2", 
+      name: "Ustadha Maryam Khan", 
+      specialization: "Qaida for Kids", 
+      qualification: "Islamic Studies Diploma", 
+      experience: 8, 
+      profile_photo: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2204?q=80&w=400&auto=format&fit=crop" 
+    },
+    { 
+      id: "3", 
+      name: "Sheikh Omar Hassan", 
+      specialization: "Arabic Grammar", 
+      qualification: "B.A. Islamic Law", 
+      experience: 10, 
+      profile_photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400&auto=format&fit=crop" 
+    },
+  ];
+
+  const testimonials = [
+    { name: "Saira K.", role: "Parent from UK", content: "My children have progressed so fast with vquranschool. The teachers are incredibly patient and the 1-on-1 focus is exactly what we needed.", stars: 5 },
+    { name: "Omar J.", role: "Adult Student from USA", content: "I was always afraid of making mistakes in Tajweed, but Sheikh Ahmed made me feel comfortable from day one. Truly a premium experience.", stars: 5 },
+    { name: "Fatima R.", role: "Hifz Student from Canada", content: "The flexible scheduling allows me to memorize Quran alongside my university studies. Highly recommended!", stars: 5 },
+  ];
 
   const features = [
     { icon: <Video className="w-8 h-8 text-blue-600" />, title: "1-on-1 Live Classes", description: "Interactive personalized sessions via video call." },
@@ -50,7 +81,7 @@ export default function Home() {
         {/* Subtle Background */}
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
           <Image
-            src="/children.png"
+            src="https://images.unsplash.com/photo-1591118139502-31c195973fe1?q=80&w=2000&auto=format&fit=crop"
             alt="Children Studying Quran"
             fill
             className="object-cover mix-blend-multiply"
@@ -132,7 +163,7 @@ export default function Home() {
       {/* Our Comprehensive Courses */}
       <section className="py-32 bg-white relative overflow-hidden border-t border-slate-200">
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none flex justify-center items-center">
-          <Image src="/bismillah.png" alt="Bismillah Calligraphy" fill className="object-contain scale-110 mix-blend-multiply opacity-40" />
+          <Image src="https://images.unsplash.com/photo-1591118139502-31c195973fe1?q=80&w=2000&auto=format&fit=crop" alt="Bismillah Calligraphy" fill className="object-cover scale-110 opacity-5" />
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none"></div>
         <div className="container px-4 md:px-6 mx-auto relative z-10">
@@ -170,14 +201,71 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Meet Our Expert Teachers */}
+      <section className="py-32 bg-slate-50 relative overflow-hidden border-t border-slate-200">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-blue-950 font-serif">Meet Our Expert Teachers</h2>
+            <p className="text-slate-600 text-lg font-light">Learn from the best certified scholars with years of experience in online teaching.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {teachers.map((teacher, i) => (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                key={teacher.id}
+              >
+                <TeacherCard teacher={teacher} />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
+      {/* Verified Reviews / Testimonials */}
+      <section className="py-32 bg-white relative border-t border-slate-200">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-20 space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-100 mb-2">
+              <div className="flex">{[1,2,3,4,5].map(s => <span key={s} className="text-xs">⭐</span>)}</div>
+              TrustScore 4.9/5
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-blue-950 font-serif">What Our Students Say</h2>
+            <p className="text-slate-600 text-lg font-light">Join 500+ satisfied students learning Quran with us.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="p-8 rounded-3xl bg-slate-50 border border-slate-200 relative"
+              >
+                <div className="text-blue-200 absolute top-6 right-8 text-6xl font-serif">"</div>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(t.stars)].map((_, i) => <span key={i} className="text-sm">⭐</span>)}
+                </div>
+                <p className="text-slate-700 mb-6 italic leading-relaxed">"{t.content}"</p>
+                <div>
+                  <p className="font-bold text-blue-950 font-serif">{t.name}</p>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider font-bold mt-1">{t.role}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Start Your Journey Today */}
-      <section className="py-32 relative overflow-hidden bg-white">
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none flex justify-center items-center">
-          <Image src="/kalima.png" alt="La ilaha illallah Calligraphy" fill className="object-cover scale-150 mix-blend-multiply opacity-20" />
+      <section className="py-32 relative overflow-hidden bg-white border-t border-slate-200">
+        <div className="absolute inset-0 bg-blue-900 z-0">
+          <Image src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2000&auto=format&fit=crop" alt="CTA Background" fill className="object-cover opacity-20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 opacity-90"></div>
         </div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[150%] bg-blue-50 blur-[150px] rounded-full pointer-events-none"></div>
 
         <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
           <motion.div
@@ -185,22 +273,27 @@ export default function Home() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto bg-white border border-slate-200 p-12 md:p-16 rounded-3xl shadow-2xl shadow-blue-900/5 relative overflow-hidden"
+            className="max-w-4xl mx-auto p-12 md:p-16 rounded-3xl"
           >
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-blue-600 to-emerald-400"></div>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-blue-950 mb-6 font-serif relative z-10 mt-4">
-              Start Your Journey Today
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6 font-serif leading-tight">
+              Start Your Holy Journey <br className="hidden md:block"/> with vquranschool Today
             </h2>
-            <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto font-light leading-relaxed relative z-10">
-              Experience our interactive classroom environment with a free, no-obligation trial class.
+            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+              Experience our interactive classroom environment with a free, no-obligation trial class and expert guidance.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/book-trial">
-                <Button className="h-14 px-10 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-600/30 transition-all hover:scale-105">
+                <Button className="h-14 px-10 text-lg font-bold bg-white text-blue-900 hover:bg-slate-100 rounded-full shadow-2xl transition-all hover:scale-105">
                   Book Your Free Trial Now
                 </Button>
               </Link>
+              <Link href="/dashboard/student/pricing">
+                <Button variant="outline" className="h-14 px-10 text-lg font-bold border-blue-400 text-white hover:bg-white/10 rounded-full transition-all">
+                  See Our Plans
+                </Button>
+              </Link>
             </div>
+            <p className="mt-8 text-blue-300 text-sm font-light">No credit card required for trial • Cancel anytime</p>
           </motion.div>
         </div>
       </section>

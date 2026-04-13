@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, UserCog, MoreHorizontal, Check, X, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 
 export default function AdminTeachersPage() {
     const [teachers, setTeachers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const { addToast } = useToast();
 
     const fetchTeachers = async () => {
         setLoading(true);
@@ -37,14 +39,16 @@ export default function AdminTeachersPage() {
                 body: JSON.stringify({ teacher_id: teacherId, action })
             });
 
-            if (res.ok) {
+             if (res.ok) {
+                addToast(`Teacher ${action === 'approved' ? 'approved' : 'rejected'} successfully`, "success");
                 fetchTeachers(); // Refresh list
             } else {
                 const error = await res.json();
-                alert(error.error || "Failed to update status");
+                addToast(error.error || "Failed to update status", "error");
             }
         } catch (error) {
             console.error("Error updating teacher status:", error);
+            addToast("An unexpected error occurred", "error");
         }
     };
 

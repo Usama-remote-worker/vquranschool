@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Users, MoreHorizontal, Check, X, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/toast";
 
 export default function AdminStudentsPage() {
     const [students, setStudents] = useState<any[]>([]);
@@ -11,6 +12,7 @@ export default function AdminStudentsPage() {
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const { addToast } = useToast();
 
     const fetchData = async () => {
         setLoading(true);
@@ -41,10 +43,15 @@ export default function AdminStudentsPage() {
                 body: JSON.stringify({ student_id: studentId, teacher_id: teacherId === "none" ? null : teacherId })
             });
             if (res.ok) {
+                addToast("Teacher assigned successfully", "success");
                 fetchData();
+            } else {
+                const error = await res.json();
+                addToast(error.error || "Failed to assign teacher", "error");
             }
         } catch (error) {
             console.error("Error assigning teacher:", error);
+            addToast("An unexpected error occurred", "error");
         } finally {
             setAssigningId(null);
         }
@@ -59,13 +66,15 @@ export default function AdminStudentsPage() {
             });
 
             if (res.ok) {
+                addToast(`Student ${action === 'approved' ? 'approved' : 'rejected'} successfully`, "success");
                 fetchData(); // Refresh list
             } else {
                 const error = await res.json();
-                alert(error.error || "Failed to update status");
+                addToast(error.error || "Failed to update status", "error");
             }
         } catch (error) {
             console.error("Error updating student status:", error);
+            addToast("An unexpected error occurred", "error");
         }
     };
 
