@@ -18,6 +18,7 @@ export async function GET() {
             SELECT 
                 u.id, u.name, u.email, u.role,
                 s.status, s.course, s.age, s.country, s.whatsapp, s.assigned_teacher,
+                s.payment_status, s.access_expires_at,
                 tu.name as teacher_name
             FROM Users u
             JOIN Students s ON u.id = s.user_id
