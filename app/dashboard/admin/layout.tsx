@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/Sidebar";
-import { LayoutDashboard, Users, UserCog, BookOpen, Inbox, Shield } from "lucide-react";
+import { LayoutDashboard, Users, UserCog, BookOpen, Inbox, Shield, Receipt } from "lucide-react";
 
 export default function AdminDashboardLayout({
     children,
@@ -14,6 +14,7 @@ export default function AdminDashboardLayout({
         { title: "Students", href: "/dashboard/admin/students", icon: Users },
         { title: "Courses", href: "/dashboard/admin/courses", icon: BookOpen },
         { title: "Trial Requests", href: "/dashboard/admin/trials", icon: Inbox },
+        { title: "Payments", href: "/dashboard/admin/payments", icon: Receipt },
         { title: "Security", href: "/dashboard/admin/security", icon: Shield },
     ];
 
