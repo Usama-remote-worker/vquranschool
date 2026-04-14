@@ -154,31 +154,15 @@ export default function PricingPage() {
         <div className="space-y-12 animate-in fade-in duration-500">
             {/* ── Header ── */}
             <div>
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Courses & Pricing</h1>
-                <p className="text-slate-500 mt-2">Explore our available courses and select a convenient learning plan that fits your schedule.</p>
-            </div>
-
-            {/* ── Courses Section ── */}
-            <div className="space-y-6">
-                <div>
-                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
-                        Available Courses
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1 pl-8">Our expert teachers cover all these subjects during your live sessions. You can learn multiple subjects or switch at any time.</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pl-8">
-                    {courses.map(course => (
-                        <CourseCard key={course.id} course={course} />
-                    ))}
-                </div>
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Pricing & Courses</h1>
+                <p className="text-slate-500 mt-2">Select a convenient learning plan that fits your schedule, and explore our available courses.</p>
             </div>
 
             {/* ── Pricing Section ── */}
             <div className="space-y-6 pt-6 border-t border-slate-200">
                 <div>
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
                         Select Your Plan
                     </h2>
                     <p className="text-sm text-slate-500 mt-1 pl-8">Choose your session frequency and billing duration to get started.</p>
@@ -297,12 +281,7 @@ export default function PricingPage() {
 
                         {/* CTA */}
                         <div className="px-7 pb-7">
-                            <a
-                                href={`https://wa.me/923044296295?text=${encodeURIComponent(`Assalamu Alaikum! I'd like to enroll in the *${plan.name} Plan* (${currentTier.label}) for $${plan.total.replace('$','')}${plan.frequency}. Please help me get started!`)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full"
-                            >
+                            <Link href="/dashboard/student/payments" className="block w-full">
                                 <Button
                                     className={`w-full h-12 rounded-xl font-bold text-base transition-all hover:scale-[1.02] ${
                                         plan.recommended
@@ -310,11 +289,11 @@ export default function PricingPage() {
                                             : "bg-slate-900 hover:bg-slate-800 text-white"
                                     }`}
                                 >
-                                    Get Started — Chat Now 💬
+                                    Proceed to Payment →
                                 </Button>
-                            </a>
+                            </Link>
                             <p className="text-xs text-center text-slate-400 mt-2">
-                                We'll activate your plan via WhatsApp
+                                Secure payment via bank transfer
                             </p>
                         </div>
                     </div>
@@ -388,7 +367,22 @@ export default function PricingPage() {
                     Need a custom family plan? <Link href="/contact" className="font-bold underline hover:text-blue-600">Contact us</Link> for special discounts.
                 </div>
             </div>
+
+            {/* ── Courses Section ── */}
+            <div className="space-y-6 pt-6 border-t border-slate-200">
+                <div>
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+                        Available Courses
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-1 pl-8">Our expert teachers cover all these subjects during your live sessions. You can learn multiple subjects or switch at any time.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pl-8">
+                    {courses.map(course => (
+                        <CourseCard key={course.id} course={course} />
+                    ))}
+                </div>
+            </div>
         </div>
-    </div>
     );
 }
