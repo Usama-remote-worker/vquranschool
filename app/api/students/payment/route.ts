@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session || !session.user?.id) {
+        if (!session || !(session.user as any)?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         await sql`
             UPDATE Students
             SET payment_status = 'pending', payment_receipt = ${receiptBase64}
-            WHERE user_id = ${session.user.id}
+            WHERE user_id = ${(session.user as any).id}
         `;
 
         return NextResponse.json({ message: "Payment proof submitted successfully" });
