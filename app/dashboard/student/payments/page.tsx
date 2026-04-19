@@ -76,7 +76,9 @@ export default function PaymentsPage() {
 
                 if (res.ok) {
                     // Update local state to pending
-                    setProfile({ ...profile, payment_status: "pending" });
+                    if (profile) {
+                        setProfile({ ...profile, payment_status: "pending" });
+                    }
                 } else {
                     const data = await res.json();
                     setError(data.error || "Failed to submit payment proof.");
