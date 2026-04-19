@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, UserCog, MoreHorizontal, Check, X, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { Teacher } from "@/types";
 
 export default function AdminTeachersPage() {
-    const [teachers, setTeachers] = useState<any[]>([]);
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const { addToast } = useToast();
@@ -18,7 +19,7 @@ export default function AdminTeachersPage() {
             const res = await fetch('/api/admin/users');
             const data = await res.json();
             if (data.users) {
-                setTeachers(data.users.filter((u: any) => u.role === 'teacher'));
+                setTeachers(data.users.filter((u: Teacher) => u.role === 'teacher'));
             }
         } catch (error) {
             console.error("Error fetching teachers:", error);
@@ -43,8 +44,8 @@ export default function AdminTeachersPage() {
                 addToast(`Teacher ${action === 'approved' ? 'approved' : 'rejected'} successfully`, "success");
                 fetchTeachers(); // Refresh list
             } else {
-                const error = await res.json();
-                addToast(error.error || "Failed to update status", "error");
+                const errorData = await res.json();
+                addToast(errorData.error || "Failed to update status", "error");
             }
         } catch (error) {
             console.error("Error updating teacher status:", error);

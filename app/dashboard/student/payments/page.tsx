@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Copy, UploadCloud, CheckCircle2, AlertCircle, Clock, CheckIcon } from "lucide-react";
 import Image from "next/image";
 
+import { Student } from "@/types";
+
 export default function PaymentsPage() {
-    const [profile, setProfile] = useState<any>(null);
+    const [profile, setProfile] = useState<Student | null>(null);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,7 +25,7 @@ export default function PaymentsPage() {
             if (res.ok) {
                 setProfile(data.student);
             }
-        } catch (err) {
+        } catch (err: unknown) {
             console.error(err);
         } finally {
             setLoading(false);

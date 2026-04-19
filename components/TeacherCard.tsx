@@ -3,15 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
 import { CheckCircle, Clock, Star } from "lucide-react";
 
-interface Teacher {
-    id: string;
-    name: string;
-    experience: string | number;
-    specialization: string;
-    available_days?: string;
-    profile_photo?: string;
-    qualification?: string;
-}
+import { Teacher } from "@/types";
 
 export function TeacherCard({ teacher }: { teacher: Teacher }) {
     return (

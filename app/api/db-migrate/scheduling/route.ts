@@ -3,8 +3,9 @@ import { sql } from "@vercel/postgres";
 
 export async function GET() {
     try {
-        // 1. Update Students table to include plan_frequency
+        // 1. Update Students table
         await sql`ALTER TABLE Students ADD COLUMN IF NOT EXISTS plan_frequency VARCHAR(10);`;
+        await sql`ALTER TABLE Students ADD COLUMN IF NOT EXISTS assigned_teacher UUID REFERENCES Users(id) ON DELETE SET NULL;`;
         
         // 2. Create ClassSchedules table
         await sql`
@@ -21,10 +22,10 @@ export async function GET() {
         
         return NextResponse.json({ 
             success: true, 
-            message: "Scheduling tables created and Students table updated successfully." 
+            message: "Scheduling schema updated successfully." 
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Migration error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : "Error" }, { status: 500 });
     }
 }

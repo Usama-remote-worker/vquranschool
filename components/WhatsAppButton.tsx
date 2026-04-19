@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { MessageCircle } from "lucide-react";
+
 
 const WHATSAPP_NUMBER = "923044296295"; // Without + prefix for wa.me links
 const WHATSAPP_MESSAGE = encodeURIComponent("Hello! I'm interested in learning Quran at vquranschool. Could you tell me more about your courses and pricing?");

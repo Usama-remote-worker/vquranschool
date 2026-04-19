@@ -6,11 +6,11 @@ import { authOptions } from "@/lib/auth";
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || (session.user as any)?.role !== 'teacher') {
+        if (!session || session.user.role !== 'teacher') {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const teacherId = (session.user as any).id;
+        const teacherId = session.user.id;
 
         // Fetch schedules for students assigned to this teacher
         const { rows: schedule } = await sql`
@@ -23,7 +23,7 @@ export async function GET() {
         `;
 
         return NextResponse.json({ schedule });
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error fetching teacher schedule:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

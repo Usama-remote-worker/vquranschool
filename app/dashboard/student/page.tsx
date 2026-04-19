@@ -7,9 +7,11 @@ import { Calendar, Clock, User, BookOpen, MessageSquare, Loader2, Video, LayoutD
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { Student } from "@/types";
+
 export default function StudentDashboard() {
     const { data: session } = useSession();
-    const [studentData, setStudentData] = useState<any>(null);
+    const [studentData, setStudentData] = useState<Student | null>(null);
     const [loading, setLoading] = useState(true);
     const [teacherName, setTeacherName] = useState<string | null>(null);
     const router = useRouter();

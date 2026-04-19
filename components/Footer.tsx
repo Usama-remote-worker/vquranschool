@@ -14,9 +14,14 @@ export function Footer() {
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="space-y-4">
-                        <span className="text-2xl font-bold tracking-tight text-white font-serif">
-                            vquran<span className="text-blue-400">school</span>
-                        </span>
+                        <Link href="/" className="flex items-center gap-3">
+                            <div className="relative w-10 h-10 bg-white rounded-lg p-1.5 shadow-lg group-hover:scale-105 transition-transform">
+                                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+                            </div>
+                            <span className="text-2xl font-bold tracking-tight text-white font-serif">
+                                vquran<span className="text-blue-400">school</span>
+                            </span>
+                        </Link>
                         <p className="text-sm text-blue-200/80 font-light leading-relaxed">
                             A professional online platform dedicated to providing the best Quranic education with experienced teachers globally.
                         </p>

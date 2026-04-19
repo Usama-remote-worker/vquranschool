@@ -3,7 +3,7 @@
  * This utility handles sending alerts to the Admin via Email.
  */
 
-export async function sendAdminNotification(type: 'student' | 'teacher' | 'trial', data: any) {
+export async function sendAdminNotification(type: 'student' | 'teacher' | 'trial', data: Record<string, string | null | undefined>) {
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "usamaaimen95@gmail.com";
     const apiKey = process.env.RESEND_API_KEY;
     

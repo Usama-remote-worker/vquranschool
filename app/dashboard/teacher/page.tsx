@@ -6,21 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Users, Clock, Video, UserCircle2, Loader2, Calendar, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
+import { Student } from "@/types";
+
 export default function TeacherDashboard() {
     const { data: session } = useSession();
-    const [assignedStudents, setAssignedStudents] = useState<any[]>([]);
+    const [assignedStudents, setAssignedStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchStudents = async () => {
-            if (!(session?.user as any)?.id) return;
+            if (!session?.user?.id) return;
             setLoading(true);
             try {
                 const res = await fetch('/api/admin/users');
                 const data = await res.json();
                 if (data.users) {
-                    // Find students where this teacher is assigned (this handles database linking using the teacher's UUID)
-                    const myStudents = data.users.filter((u: any) => u.assigned_teacher === (session?.user as any)?.id);
+                    // Find students where this teacher is assigned
+                    const myStudents = data.users.filter((u: Student & { assigned_teacher?: string }) => u.assigned_teacher === session.user.id);
                     setAssignedStudents(myStudents);
                 }
             } catch (error) {

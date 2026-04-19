@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Search, Users, MoreHorizontal, Check, X, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 
+import { Teacher, Student } from "@/types";
+
 export default function AdminStudentsPage() {
-    const [students, setStudents] = useState<any[]>([]);
-    const [teachers, setTeachers] = useState<any[]>([]);
+    const [students, setStudents] = useState<Student[]>([]);
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [loading, setLoading] = useState(true);
     const [assigningId, setAssigningId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -20,8 +22,8 @@ export default function AdminStudentsPage() {
             const res = await fetch('/api/admin/users');
             const data = await res.json();
             if (data.users) {
-                setStudents(data.users.filter((u: any) => u.role === 'student'));
-                setTeachers(data.users.filter((u: any) => u.role === 'teacher' && u.status === 'approved'));
+                setStudents(data.users.filter((u: Student) => u.role === 'student'));
+                setTeachers(data.users.filter((u: Teacher) => u.role === 'teacher' && u.status === 'approved'));
             }
         } catch (error) {
             console.error("Error fetching data:", error);

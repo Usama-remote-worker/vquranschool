@@ -36,8 +36,9 @@ export default function RegisterStudentPage() {
 
             addToast("Account created successfully! Please login to access your dashboard.", "success");
             router.push("/login");
-        } catch (error: any) {
-            addToast(error.message || "Registration failed. Please try again.", "error");
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Registration failed. Please try again.";
+            addToast(message, "error");
         } finally {
             setLoading(false);
         }

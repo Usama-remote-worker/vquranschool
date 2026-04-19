@@ -8,8 +8,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { Teacher, Student } from "@/types";
+
 export default function AdminDashboard() {
-    const [pendingTeachers, setPendingTeachers] = useState<any[]>([]);
+    const [pendingTeachers, setPendingTeachers] = useState<Teacher[]>([]);
     const [trialRequests, setTrialRequests] = useState<any[]>([]);
     const [allUsers, setAllUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function AdminDashboard() {
 
             if (usersData.users) {
                 setAllUsers(usersData.users);
-                setPendingTeachers(usersData.users.filter((u: any) => u.role === "teacher" && u.status === "pending"));
+                setPendingTeachers(usersData.users.filter((u: Teacher) => u.role === "teacher" && u.status === "pending"));
             }
             if (trialsData.trials) {
                 setTrialRequests(trialsData.trials);

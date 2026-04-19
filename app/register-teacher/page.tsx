@@ -36,8 +36,9 @@ export default function RegisterTeacherPage() {
 
             addToast("Application submitted! Our admin team will review and contact you shortly.", "success");
             router.push("/");
-        } catch (error: any) {
-            addToast(error.message || "Submission failed. Please try again.", "error");
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Submission failed. Please try again.";
+            addToast(message, "error");
         } finally {
             setLoading(false);
         }

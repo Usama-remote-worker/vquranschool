@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET() {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any)?.role !== "admin") {
+    if (!session || session.user?.role !== "admin") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -18,14 +18,14 @@ export async function GET() {
             ORDER BY u.created_at DESC
         `;
         return NextResponse.json({ payments: rows });
-    } catch (e: any) {
-        return NextResponse.json({ error: e.message }, { status: 500 });
+    } catch (e: unknown) {
+        return NextResponse.json({ error: e instanceof Error ? e.message : "Error" }, { status: 500 });
     }
 }
 
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any)?.role !== "admin") {
+    if (!session || session.user?.role !== "admin") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -34,10 +34,11 @@ export async function POST(req: Request) {
 
         if (action === "approve") {
             const addedMonths = months ? Number(months) : 1;
+            // Use GREATEST(access_expires_at, NOW()) to ensure extension works for active users
             await sql`
                 UPDATE Students
                 SET payment_status = 'active', 
-                    access_expires_at = NOW() + (INTERVAL '1 month' * ${addedMonths}),
+                    access_expires_at = COALESCE(GREATEST(access_expires_at, NOW()), NOW()) + (INTERVAL '1 month' * ${addedMonths}),
                     payment_receipt = NULL
                 WHERE user_id = ${studentId}
             `;
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ message: "Action Successful" });
-    } catch (e: any) {
-        return NextResponse.json({ error: e.message }, { status: 500 });
+    } catch (e: unknown) {
+        return NextResponse.json({ error: e instanceof Error ? e.message : "Error" }, { status: 500 });
     }
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Check, CreditCard, Building, Globe, Zap, BookOpen } from "lucide-react";
+import { Check, CreditCard, Building, Globe, Zap, BookOpen, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CourseCard } from "@/components/CourseCard";

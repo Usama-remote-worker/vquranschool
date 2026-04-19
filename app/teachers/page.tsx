@@ -5,8 +5,10 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
+import { Teacher } from "@/types";
+
 export default function TeachersPage() {
-    const teachers: any[] = [];
+    const teachers: Teacher[] = [];
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-slate-50 text-slate-900">

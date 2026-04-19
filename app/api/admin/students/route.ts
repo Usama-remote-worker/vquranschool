@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 export async function GET() {
     try {
         const session = await getServerSession(authOptions);
-        if (!session || (session.user as any)?.role !== 'admin') {
+        if (!session || session.user.role !== 'admin') {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
@@ -19,7 +19,7 @@ export async function GET() {
         `;
 
         return NextResponse.json({ students });
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error fetching students for admin:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

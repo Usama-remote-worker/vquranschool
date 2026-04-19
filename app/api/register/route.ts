@@ -82,10 +82,10 @@ export async function POST(req: Request) {
             { status: 201 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Registration Exception: ", error);
         return NextResponse.json(
-            { error: error.message || 'Internal server error processing registration' },
+            { error: error instanceof Error ? error.message : 'Internal server error processing registration' },
             { status: 500 }
         );
     }
