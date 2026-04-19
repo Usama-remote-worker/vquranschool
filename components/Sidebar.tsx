@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LucideIcon, LogOut, ChevronRight, Menu, X } from "lucide-react";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 export interface SidebarItem {
     title: string;
@@ -51,9 +52,14 @@ export function Sidebar({ items, title, subtitle, className }: SidebarProps) {
 
             {/* Logo & Title */}
             <div className="px-6 pt-8 pb-6 border-b border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-bold bg-blue-600/20 border border-blue-600/40">
-                        <span className="text-blue-500">Q</span>
+                <div className="flex items-center gap-4">
+                    <div className="relative w-10 h-10 border border-white/10 rounded-xl overflow-hidden bg-white/5">
+                        <Image 
+                            src="/logo.png" 
+                            alt="Logo" 
+                            fill 
+                            className="object-contain p-1.5"
+                        />
                     </div>
                     <div>
                         <h2 className="text-white font-bold text-sm tracking-tight">{title}</h2>

@@ -1,58 +1,94 @@
 "use client";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Clock, Video } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Video, BookOpen, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 export default function StudentSchedulePage() {
-    const schedule: any[] = [];
+    const [schedule, setSchedule] = useState<any[]>([]);
+    const [planFrequency, setPlanFrequency] = useState<string>("");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchSchedule() {
+            try {
+                const res = await fetch("/api/students/schedule");
+                const data = await res.json();
+                if (data.schedule) {
+                    setSchedule(data.schedule);
+                    setPlanFrequency(data.planFrequency);
+                }
+            } catch (error) {
+                console.error("Failed to fetch schedule", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchSchedule();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-center flex-wrap gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Class Schedule</h1>
-                    <p className="text-slate-500">View and manage your upcoming sessions.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Weekly Timetable</h1>
+                    <p className="text-slate-500">Your regular recurring classes based on your plan.</p>
                 </div>
-                <div className="text-sm font-medium bg-white px-4 py-2 rounded-md shadow-sm border border-slate-200 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-blue-500" /> Your Timezone: <span className="text-slate-900">GMT (London)</span>
+                <div className="flex items-center gap-3">
+                    <div className="text-sm font-bold bg-blue-50 text-blue-700 px-4 py-2 rounded-xl border border-blue-100 flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" /> Plan: {planFrequency}
+                    </div>
                 </div>
             </div>
 
-            <Card className="border-blue-100 shadow-sm">
-                <CardHeader className="bg-blue-50/50 border-b border-blue-50 rounded-t-xl">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <CalendarIcon className="w-5 h-5 text-blue-600" /> This Week's Classes
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <ul className="divide-y divide-slate-100">
-                        {schedule.map((slot) => (
-                            <li key={slot.id} className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:bg-slate-50 transition-colors">
-                                <div className="flex gap-4 items-start">
-                                    <div className="bg-blue-100 text-blue-700 w-16 h-16 rounded-xl flex flex-col items-center justify-center shrink-0">
-                                        <span className="text-xs font-bold uppercase">{slot.day.substring(0, 3)}</span>
-                                        <span className="text-lg font-extrabold leading-none mt-1">{slot.date.split(' ')[1].replace(',', '')}</span>
+            {schedule.length === 0 ? (
+                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-12 text-center flex flex-col items-center">
+                    <AlertCircle className="w-12 h-12 text-amber-500 mb-4" />
+                    <h3 className="text-lg font-bold text-amber-900">No active schedule found</h3>
+                    <p className="text-amber-700 max-w-sm mt-1">
+                        Once your payment is approved, our admin will assign your class days and times here.
+                    </p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {schedule.map((slot) => (
+                        <Card key={slot.id} className="border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                            <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
+                                <span className="font-bold uppercase tracking-widest text-[10px]">{DAYS[slot.day_of_week]}</span>
+                                <div className="p-1 px-2 bg-white/10 rounded-md text-[11px] font-medium">
+                                    Recurring
+                                </div>
+                            </div>
+                            <CardContent className="p-5 space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                                        <Clock className="w-5 h-5 text-blue-600" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-slate-800 text-lg">{slot.type}</h3>
-                                        <p className="text-slate-600 flex items-center gap-1.5 mt-1 text-sm bg-slate-100 w-max px-2 py-0.5 rounded-md">
-                                            <Clock className="w-3.5 h-3.5" /> {slot.time}
-                                        </p>
+                                        <p className="text-xs font-bold text-slate-400 uppercase leading-none mb-1">Time</p>
+                                        <p className="text-lg font-black text-slate-800">{slot.start_time.substring(0, 5)}</p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                                    <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
-                                        {slot.status}
-                                    </span>
-                                    <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
-                                        <Video className="w-4 h-4 mr-2" /> Join Class
+                                <div className="pt-2">
+                                    <Button className="w-full bg-blue-600 hover:bg-blue-700 font-bold h-10 rounded-xl">
+                                        <Video className="w-4 h-4 mr-2" /> Join Room
                                     </Button>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
-                </CardContent>
-            </Card>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

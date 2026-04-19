@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -30,11 +31,17 @@ export function Navbar() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold transition-transform group-hover:scale-110">
-                            Q
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="relative w-10 h-10 transition-transform group-hover:scale-110">
+                            <Image 
+                                src="/logo.png" 
+                                alt="vquranschool logo" 
+                                fill 
+                                className="object-contain"
+                                priority
+                            />
                         </div>
-                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-900 to-blue-600 font-serif">
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-900 to-blue-600 font-serif tracking-tight">
                             vquranschool
                         </span>
                     </Link>
