@@ -18,12 +18,10 @@ export default function TeacherDashboard() {
             if (!session?.user?.id) return;
             setLoading(true);
             try {
-                const res = await fetch('/api/admin/users');
+                const res = await fetch('/api/teachers/students');
                 const data = await res.json();
-                if (data.users) {
-                    // Find students where this teacher is assigned
-                    const myStudents = data.users.filter((u: Student & { assigned_teacher?: string }) => u.assigned_teacher === session.user.id);
-                    setAssignedStudents(myStudents);
+                if (data.students) {
+                    setAssignedStudents(data.students);
                 }
             } catch (error) {
                 console.error("Error fetching students:", error);
@@ -88,8 +86,10 @@ export default function TeacherDashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <Button className="bg-blue-600 hover:bg-blue-700 shadow-md transform active:scale-95 transition-all">
-                                            <Video className="w-4 h-4 mr-2" /> Start Now
+                                        <Button asChild className="bg-blue-600 hover:bg-blue-700 shadow-md transform active:scale-95 transition-all">
+                                            <Link href={`/classroom/${student.id}`}>
+                                                <Video className="w-4 h-4 mr-2" /> Start Now
+                                            </Link>
                                         </Button>
                                     </div>
                                 ))
@@ -170,9 +170,11 @@ export default function TeacherDashboard() {
                                                 </span>
                                             </td>
                                             <td className="py-5 px-6 text-right">
-                                                <Button variant="ghost" size="sm" className="text-blue-600 hover:text-white hover:bg-blue-600 font-bold px-4 h-9 shadow-sm transition-all border border-blue-50">
-                                                    Manage Profile
-                                                </Button>
+                                                <Link href={`/dashboard/teacher/students/${student.id}/attendance`}>
+                                                    <Button variant="ghost" size="sm" className="text-blue-600 hover:text-white hover:bg-blue-600 font-bold px-4 h-9 shadow-sm transition-all border border-blue-50">
+                                                        Log Progress
+                                                    </Button>
+                                                </Link>
                                             </td>
                                         </tr>
                                     ))

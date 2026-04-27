@@ -65,6 +65,10 @@ export default function AdminDashboard() {
     const teacherCount = allUsers.filter((u) => u.role === "teacher").length;
     const newTrials = trialRequests.filter((t) => t.status === "new").length;
     const contactedTrials = trialRequests.filter((t) => t.status === "contacted").length;
+    const pendingPayments = allUsers.filter((u) => u.role === "student" && u.payment_status === "pending").length;
+
+    // Estimate Revenue (assuming average plan is $45)
+    const estimatedMRR = allUsers.filter((u) => u.role === "student" && u.payment_status === "active").length * 45;
 
     const stats = [
         {
@@ -76,12 +80,12 @@ export default function AdminDashboard() {
             trend: "Enrolled learners",
         },
         {
-            label: "Total Teachers",
-            value: loading ? "—" : teacherCount,
-            icon: GraduationCap,
-            color: "#1e3a5f",
-            bg: "rgba(30,58,95,0.08)",
-            trend: `${pendingTeachers.length} pending approval`,
+            label: "Total Revenue (MRR)",
+            value: loading ? "—" : `$${estimatedMRR}`,
+            icon: TrendingUp,
+            color: "#10b981",
+            bg: "rgba(16,185,129,0.08)",
+            trend: "Estimated monthly income",
         },
         {
             label: "Trial Requests",
@@ -92,12 +96,12 @@ export default function AdminDashboard() {
             trend: `${newTrials} new · ${contactedTrials} contacted`,
         },
         {
-            label: "Pending Actions",
-            value: loading ? "—" : pendingTeachers.length + newTrials,
-            icon: AlertCircle,
-            color: "#1e40af",
-            bg: "rgba(30,64,175,0.08)",
-            trend: "Require your attention",
+            label: "Pending Payments",
+            value: loading ? "—" : pendingPayments,
+            icon: CreditCard,
+            color: "#f59e0b",
+            bg: "rgba(245,158,11,0.08)",
+            trend: "Awaiting verification",
         },
     ];
 
@@ -149,6 +153,36 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Admin Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-blue-100 shadow-sm hover:border-blue-300 transition-colors">
+                    <CardHeader>
+                        <CardTitle className="text-lg">Financial Overview</CardTitle>
+                        <CardDescription>Monitor revenue and verify receipts.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex gap-4">
+                        <Link href="/dashboard/admin/payments" className="flex-1">
+                            <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 font-bold rounded-xl shadow-lg shadow-blue-600/10">
+                                <CreditCard className="w-4 h-4 mr-2" /> Verify Payments
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+                <Card className="border-slate-200 shadow-sm hover:border-slate-300 transition-colors">
+                    <CardHeader>
+                        <CardTitle className="text-lg">System Security</CardTitle>
+                        <CardDescription>Manage user passwords and access control.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex gap-4">
+                        <Link href="/dashboard/admin/security" className="flex-1">
+                            <Button variant="outline" className="w-full border-slate-200 text-slate-700 h-12 font-bold rounded-xl">
+                                <KeyRound className="w-4 h-4 mr-2" /> Security Settings
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Main Content Grid */}

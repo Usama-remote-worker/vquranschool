@@ -124,6 +124,51 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background;
+  }
+
+  h1 { 
+    font-weight: 700; 
+    font-size: 2.5rem; 
+    line-height: 1.2; 
+    @apply font-serif;
+  }
+  
+  h2 { 
+    font-weight: 600; 
+    font-size: 2rem; 
+    line-height: 1.3; 
+    @apply font-serif;
+  }
+  
+  h3 { 
+    font-weight: 600; 
+    font-size: 1.5rem; 
+    line-height: 1.4; 
+    @apply font-serif;
+  }
+
+  .body-text {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .ui-element {
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .pull-quote, .testimonial blockquote {
+    font-family: var(--font-serif), serif;
+    font-style: italic;
+    font-weight: 500;
   }
 }

@@ -147,139 +147,152 @@ const tiers = [
 
 export default function PricingPage() {
     const [activeTier, setActiveTier] = useState<"3x" | "5x">("5x");
+    const [loading, setLoading] = useState<string | null>(null);
+    const { addToast } = useToast();
+
+    const handleCheckout = async (planId: string) => {
+        setLoading(planId);
+        try {
+            const res = await fetch("/api/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ planId }),
+            });
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                addToast(data.error || "Checkout failed", "error");
+            }
+        } catch (error) {
+            addToast("Network error. Try manual payment.", "error");
+        } finally {
+            setLoading(null);
+        }
+    };
 
     const currentTier = tiers.find((t) => t.id === activeTier)!;
 
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
             {/* ── Header ── */}
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Pricing & Courses</h1>
-                <p className="text-slate-500 mt-2">Select a convenient learning plan that fits your schedule, and explore our available courses.</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div>
+                    <h1 className="text-4xl font-black tracking-tight text-slate-900 font-serif">Pricing & Courses</h1>
+                    <p className="text-slate-500 mt-2 text-lg font-light">Select a convenient learning plan and start your Quranic journey today.</p>
+                </div>
+                <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border shadow-sm">
+                    <Link href="/dashboard/student/payments">
+                        <Button variant="outline" className="rounded-xl border-slate-200 text-slate-700 font-bold h-11 px-6">
+                            <Building className="w-4 h-4 mr-2" /> Manual Bank Details
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* ── Pricing Section ── */}
-            <div className="space-y-6 pt-6 border-t border-slate-200">
-                <div>
-                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
-                        Select Your Plan
-                    </h2>
-                    <p className="text-sm text-slate-500 mt-1 pl-8">Choose your session frequency and billing duration to get started.</p>
-                </div>
-
-                <div className="pl-8 space-y-6">
-                    {/* ── Frequency Toggle ── */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider shrink-0">Sessions per week:</p>
-                        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl">
-                    {tiers.map((tier) => (
-                        <button
-                            key={tier.id}
-                            onClick={() => setActiveTier(tier.id as "3x" | "5x")}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-                                activeTier === tier.id
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-[1.02]"
-                                    : "text-slate-600 hover:text-slate-900"
-                            }`}
-                        >
-                            <tier.icon className="w-4 h-4" />
-                            {tier.label}
-                            {tier.id === "5x" && (
-                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${activeTier === "5x" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-700"}`}>
-                                    Popular
-                                </span>
-                            )}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* ── Plan description strip ── */}
-            <div className={`rounded-2xl px-5 py-4 flex items-center gap-4 ${activeTier === "3x" ? "bg-slate-50 border border-slate-200" : "bg-blue-50 border border-blue-100"}`}>
-                <currentTier.icon className={`w-5 h-5 shrink-0 ${activeTier === "3x" ? "text-slate-600" : "text-blue-600"}`} />
-                <p className={`text-sm font-medium ${activeTier === "3x" ? "text-slate-700" : "text-blue-800"}`}>
-                    {activeTier === "3x"
-                        ? "3 classes/week · Great for students with busy schedules or beginners building consistent habits."
-                        : "5 classes/week · Ideal for fast progress, dedicated learners, and younger students."}
-                </p>
-            </div>
-
-            {/* ── Plans Grid ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-                {currentTier.plans.map((plan, i) => (
-                    <div
-                        key={i}
-                        className={`relative flex flex-col rounded-2xl bg-white border transition-all duration-300 hover:shadow-xl ${
-                            plan.recommended
-                                ? "border-blue-500 shadow-lg ring-1 ring-blue-500/10"
-                                : "border-slate-200 shadow-sm"
-                        }`}
-                    >
-                        {/* Recommended Badge */}
-                        {plan.recommended && (
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase shadow-md z-20">
-                                Recommended
-                            </div>
-                        )}
-
-                        {/* Top Section: Title & Price */}
-                        <div className={`p-5 rounded-t-2xl border-b ${plan.recommended ? "bg-blue-50/50 border-blue-100" : "bg-slate-50/50 border-slate-100"}`}>
-                            <div className="flex justify-between items-start mb-1">
-                                <h3 className="font-bold text-slate-900 text-lg">{plan.name}</h3>
-                                {plan.saving && (
-                                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md uppercase">
-                                        {plan.saving}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-3xl font-black text-blue-600">{plan.total}</span>
-                                <span className="text-slate-400 text-sm font-medium">{plan.frequency}</span>
-                            </div>
-                        </div>
-
-                        {/* Middle Section: Features List */}
-                        <div className="p-5 flex-1 space-y-4">
-                            <div className="flex items-center gap-3 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/50">
-                                <div className="p-1.5 bg-blue-600 rounded-lg text-white">
-                                    <Clock className="w-3.5 h-3.5" />
-                                </div>
-                                <div>
-                                    <p className="text-[11px] font-bold text-blue-900 leading-none">Price per session</p>
-                                    <p className="text-sm font-black text-blue-700">{plan.perSession}</p>
-                                </div>
-                            </div>
-
-                            <ul className="space-y-2.5">
-                                {plan.features.slice(0, 4).map((f, fi) => (
-                                    <li key={fi} className="flex items-center gap-2.5">
-                                        <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-                                        <span className="text-slate-600 text-[13px] font-medium leading-tight">{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Bottom Section: CTA */}
-                        <div className="p-5 pt-0">
-                            <Link href="/dashboard/student/payments" className="block w-full">
-                                <Button
-                                    className={`w-full h-11 rounded-xl font-bold text-sm transition-all active:scale-95 ${
-                                        plan.recommended
-                                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20"
-                                            : "bg-slate-900 hover:bg-slate-800 text-white"
-                                    }`}
-                                >
-                                    Select Plan
-                                </Button>
-                            </Link>
-                            <p className="text-[10px] text-center text-slate-400 mt-2 font-medium italic">
-                                {plan.durationNote}
-                            </p>
-                        </div>
+            <div className="space-y-8 pt-8 border-t border-slate-200">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-full md:w-auto">
+                        {tiers.map((tier) => (
+                            <button
+                                key={tier.id}
+                                onClick={() => setActiveTier(tier.id as "3x" | "5x")}
+                                className={`flex-1 flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+                                    activeTier === tier.id
+                                        ? "bg-blue-600 text-white shadow-xl shadow-blue-600/30 scale-[1.05]"
+                                        : "text-slate-500 hover:text-slate-800"
+                                }`}
+                            >
+                                <tier.icon className="w-4 h-4" />
+                                {tier.label}
+                            </button>
+                        ))}
                     </div>
-                ))}
+                    
+                    <div className="flex items-center gap-4 text-sm font-bold text-slate-400 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
+                        <CreditCard className="w-4 h-4 text-blue-600" />
+                        Card Payments Secured by Stripe
+                    </div>
+                </div>
+
+                {/* ── Plans Grid ── */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+                    {currentTier.plans.map((plan, i) => {
+                        const planId = `${activeTier}_${plan.name.toLowerCase().split('-')[0].trim().replace('quarterly', 'quarterly').replace('semi-annual', 'semi')}`;
+                        return (
+                            <div
+                                key={i}
+                                className={`relative flex flex-col rounded-[40px] bg-white border transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${
+                                    plan.recommended
+                                        ? "border-blue-500 shadow-xl ring-4 ring-blue-500/5"
+                                        : "border-slate-200 shadow-sm"
+                                }`}
+                            >
+                                {plan.recommended && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-xl z-20 border-2 border-white">
+                                        Most Popular
+                                    </div>
+                                )}
+
+                                <div className={`p-8 rounded-t-[38px] border-b ${plan.recommended ? "bg-blue-50/50 border-blue-100" : "bg-slate-50/30 border-slate-100"}`}>
+                                    <h3 className="font-black text-slate-900 text-2xl mb-1">{plan.name}</h3>
+                                    <div className="flex items-baseline gap-1 mt-4">
+                                        <span className={`text-5xl font-black ${plan.recommended ? "text-blue-600" : "text-slate-900"}`}>{plan.total}</span>
+                                        <span className="text-slate-400 text-sm font-bold uppercase tracking-widest">{plan.frequency}</span>
+                                    </div>
+                                    {plan.saving && (
+                                        <div className="inline-block mt-3 px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black rounded-lg uppercase tracking-wider">
+                                            {plan.saving}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="p-8 flex-1 space-y-6">
+                                    <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                        <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
+                                            <Clock className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Cost Per Class</p>
+                                            <p className="text-xl font-black text-slate-800">{plan.perSession}</p>
+                                        </div>
+                                    </div>
+
+                                    <ul className="space-y-4">
+                                        {plan.features.map((f, fi) => (
+                                            <li key={fi} className="flex items-center gap-3">
+                                                <div className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100">
+                                                    <Check className="w-3 h-3 text-emerald-600" />
+                                                </div>
+                                                <span className="text-slate-600 text-sm font-medium">{f}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="p-8 pt-0 space-y-3">
+                                    <Button
+                                        onClick={() => handleCheckout(planId)}
+                                        disabled={loading !== null}
+                                        className={`w-full h-14 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-xl ${
+                                            plan.recommended
+                                                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/30"
+                                                : "bg-slate-900 hover:bg-black text-white"
+                                        }`}
+                                    >
+                                        {loading === planId ? <Loader2 className="w-6 h-6 animate-spin" /> : "Pay via Card"}
+                                    </Button>
+                                    <Link href="/dashboard/student/payments" className="block w-full">
+                                        <Button variant="ghost" className="w-full text-slate-500 font-bold hover:text-blue-600">
+                                            Manual Transfer
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
             </div>
 

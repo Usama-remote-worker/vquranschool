@@ -87,14 +87,54 @@ export default function StudentDashboard() {
                     <CardContent className="pt-5">
                         <div className="text-2xl font-bold text-slate-900">{teacherName || "Not Assigned Yet"}</div>
                         <p className="text-xs text-slate-500 mt-1">Specialist in {studentData?.course || "Quranic Studies"}</p>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="w-full mt-6 text-blue-600 border-blue-200 hover:bg-blue-50 h-10 shadow-sm"
-                            disabled={!studentData?.assigned_teacher}
+                        {teacherName ? (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full mt-6 text-blue-600 border-blue-200 hover:bg-blue-50 h-10 shadow-sm"
+                            >
+                                <MessageSquare className="w-4 h-4 mr-2" /> Contact Teacher
+                            </Button>
+                        ) : (
+                            <Button
+                                size="sm"
+                                variant="default"
+                                asChild
+                                className="w-full mt-6 bg-blue-600 hover:bg-blue-700 h-10 shadow-md"
+                            >
+                                <Link href="/dashboard/student/teacher">
+                                    <User className="w-4 h-4 mr-2" /> Select Your Teacher
+                                </Link>
+                            </Button>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Next Class Card */}
+                <Card className="border-blue-100 shadow-sm hover:border-blue-300 transition-colors md:col-span-2 lg:col-span-1">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 border-b border-slate-50 rounded-t-xl bg-slate-50/30">
+                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Your Next Class</CardTitle>
+                        <Video className="h-5 w-5 text-blue-600" />
+                    </CardHeader>
+                    <CardContent className="pt-5">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+                                <Calendar className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <div className="text-lg font-bold text-slate-900">Today at 5:00 PM</div>
+                                <div className="text-sm text-slate-500">Class ID: Academy-101</div>
+                            </div>
+                        </div>
+                        <Button 
+                            className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-bold shadow-lg group"
+                            asChild
                         >
-                            <MessageSquare className="w-4 h-4 mr-2" /> Contact Teacher
+                            <Link href={`/classroom/${studentData?.id || 'live'}`}>
+                                Join Live Class <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
                         </Button>
+                        <p className="text-[10px] text-center text-slate-400 mt-3 font-medium uppercase tracking-widest">Secure Link • Subscription Active</p>
                     </CardContent>
                 </Card>
 
@@ -119,25 +159,7 @@ export default function StudentDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Next Class Card */}
-                <Card className="border-blue-100 shadow-sm hover:border-blue-300 transition-colors md:col-span-2 lg:col-span-1">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 border-b border-slate-50 rounded-t-xl bg-slate-50/30">
-                        <CardTitle className="text-sm font-bold uppercase tracking-wider text-slate-500">Next Live Session</CardTitle>
-                        <Clock className="h-5 w-5 text-blue-600" />
-                    </CardHeader>
-                    <CardContent className="pt-5">
-                        <div className="text-2xl font-bold text-slate-900 italic">"Coming Soon"</div>
-                        <div className="flex items-center gap-2 mt-4 text-sm text-blue-600 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
-                            <Calendar className="w-4 h-4 shrink-0" /> Schedule will be updated after approval
-                        </div>
-                        <Button
-                            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 h-10 text-white shadow-sm"
-                            disabled={!isApproved}
-                        >
-                            <Video className="w-4 h-4 mr-2" /> Join Zoom Meeting
-                        </Button>
-                    </CardContent>
-                </Card>
+
             </div>
 
             {/* ── Quick Links ── */}

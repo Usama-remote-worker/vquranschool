@@ -20,12 +20,7 @@ export const authOptions: NextAuthOptions = {
                     const email = credentials.email.toLowerCase().trim();
                     const password = credentials.password.trim();
 
-                    // Temporary Admin Fallback for Development
-                    if (email === "admin@vquranschool.com" && password === "admin123") {
-                        return { id: "admin-temp", name: "Admin (Dev Mode)", email: "admin@vquranschool.com", role: "admin" };
-                    }
-
-                    // Fetch the user from Vercel Postgres if not the dev admin
+                    // Fetch the user from Vercel Postgres
                     const { rows } = await sql`
                         SELECT * FROM Users WHERE LOWER(email) = ${email} LIMIT 1
                     `;

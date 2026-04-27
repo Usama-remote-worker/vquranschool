@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -19,10 +19,18 @@ export function Navbar() {
 
     const navLinks = [
         { name: "Home", href: "/" },
-        { name: "About", href: "/about" },
+        { 
+            name: "Programs", 
+            href: "#",
+            children: [
+                { name: "Quran Classes UK", href: "/online-quran-classes-uk" },
+                { name: "Quran USA & Canada", href: "/online-quran-classes-usa-canada" },
+                { name: "Female Quran Tutors", href: "/online-quran-classes-female-teachers" },
+            ]
+        },
         { name: "Courses", href: "/courses" },
-        { name: "Teachers", href: "/teachers" },
         { name: "Pricing", href: "/pricing" },
+        { name: "Blog", href: "/blog" },
         { name: "Contact", href: "/contact" },
     ];
 
@@ -49,16 +57,45 @@ export function Navbar() {
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-8">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className={cn(
-                                    "text-sm font-medium transition-colors hover:text-blue-600",
-                                    pathname === link.href ? "text-blue-600" : "text-slate-600"
+                            <div key={link.name} className="relative group">
+                                {link.children ? (
+                                    <>
+                                        <button className={cn(
+                                            "flex items-center gap-1 text-sm font-medium transition-colors hover:text-blue-600",
+                                            link.children.some(c => pathname === c.href) ? "text-blue-600" : "text-slate-600"
+                                        )}>
+                                            {link.name}
+                                            <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                                        </button>
+                                        <div className="absolute top-full left-0 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                                            <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-2 min-w-[200px]">
+                                                {link.children.map((child) => (
+                                                    <Link
+                                                        key={child.href}
+                                                        href={child.href}
+                                                        className={cn(
+                                                            "block px-4 py-2 text-sm rounded-xl transition-all hover:bg-blue-50 hover:text-blue-600",
+                                                            pathname === child.href ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600"
+                                                        )}
+                                                    >
+                                                        {child.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <Link
+                                        href={link.href}
+                                        className={cn(
+                                            "text-sm font-medium transition-colors hover:text-blue-600",
+                                            pathname === link.href ? "text-blue-600" : "text-slate-600"
+                                        )}
+                                    >
+                                        {link.name}
+                                    </Link>
                                 )}
-                            >
-                                {link.name}
-                            </Link>
+                            </div>
                         ))}
                     </nav>
 
@@ -103,17 +140,37 @@ export function Navbar() {
                 <div className="md:hidden border-t border-slate-100 bg-white p-4 space-y-4 animate-in slide-in-from-top duration-300">
                     <nav className="flex flex-col gap-4">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                onClick={() => setIsMenuOpen(false)}
-                                className={cn(
-                                    "text-base font-medium px-4 py-2 rounded-lg transition-colors",
-                                    pathname === link.href ? "bg-blue-50 text-blue-600" : "text-slate-600 hover:bg-slate-50"
+                            <div key={link.name}>
+                                {link.children ? (
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 px-4 pt-2">{link.name}</p>
+                                        {link.children.map((child) => (
+                                            <Link
+                                                key={child.href}
+                                                href={child.href}
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className={cn(
+                                                    "block text-base font-medium px-4 py-2 rounded-lg transition-colors",
+                                                    pathname === child.href ? "bg-blue-50 text-blue-600" : "text-slate-600"
+                                                )}
+                                            >
+                                                {child.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <Link
+                                        href={link.href}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className={cn(
+                                            "text-base font-medium px-4 py-2 rounded-lg transition-colors",
+                                            pathname === link.href ? "bg-blue-50 text-blue-600" : "text-slate-600 hover:bg-slate-50"
+                                        )}
+                                    >
+                                        {link.name}
+                                    </Link>
                                 )}
-                            >
-                                {link.name}
-                            </Link>
+                            </div>
                         ))}
                         <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
                             {session ? (

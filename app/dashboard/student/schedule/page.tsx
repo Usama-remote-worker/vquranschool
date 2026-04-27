@@ -46,8 +46,13 @@ export default function StudentSchedulePage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="text-sm font-bold bg-blue-50 text-blue-700 px-4 py-2 rounded-xl border border-blue-100 flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" /> Plan: {planFrequency}
+                        <BookOpen className="w-4 h-4" /> Weekly Limit: {schedule.length} / {planFrequency === "2 days week" ? "2" : planFrequency === "3 days week" ? "3" : planFrequency === "5 days week" ? "5" : "—"} classes
                     </div>
+                    <Link href="/dashboard/student/pricing">
+                        <Button variant="outline" size="sm" className="rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 font-bold">
+                            Upgrade Plan
+                        </Button>
+                    </Link>
                 </div>
             </div>
 

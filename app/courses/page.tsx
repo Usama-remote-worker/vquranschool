@@ -1,7 +1,34 @@
+import type { Metadata } from "next";
 import { CourseCard } from "@/components/CourseCard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+  title: "Online Quran Courses | Noorani Qaida, Tajweed, Hifz & Islamic Studies | vQuranSchool",
+  description:
+    "Explore our comprehensive online Quran courses: Noorani Qaida for beginners, Quran reading with Tajweed, Hifz ul Quran memorization, and Islamic Studies. Certified tutors. Free trial class available for students in UK, USA, Canada & Australia.",
+  alternates: { canonical: "https://vquranschool.com/courses" },
+  openGraph: {
+    title: "Online Quran Courses | vQuranSchool",
+    description: "Noorani Qaida, Tajweed, Hifz & Islamic Studies. Certified tutors, 1-on-1 classes. Book your FREE trial!",
+    url: "https://vquranschool.com/courses",
+  },
+};
+
+const courseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Online Quran Courses – vQuranSchool",
+  url: "https://vquranschool.com/courses",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, item: { "@type": "Course", name: "Noorani Qaida for Beginners", description: "Learn the Arabic alphabet and basics of Quranic pronunciation for beginners.", provider: { "@type": "Organization", name: "vQuranSchool" } } },
+    { "@type": "ListItem", position: 2, item: { "@type": "Course", name: "Quran Reading (Nazra) with Tajweed", description: "Fluently read the Holy Quran with correct Tajweed rules and Makharij.", provider: { "@type": "Organization", name: "vQuranSchool" } } },
+    { "@type": "ListItem", position: 3, item: { "@type": "Course", name: "Quran Memorization (Hifz Program)", description: "Structured Hifz program to memorize the Holy Quran with certified Hafiz teachers.", provider: { "@type": "Organization", name: "vQuranSchool" } } },
+    { "@type": "ListItem", position: 4, item: { "@type": "Course", name: "Tajweed Masterclass", description: "Advanced rules of recitation — Makharij, Sifat, and practical application.", provider: { "@type": "Organization", name: "vQuranSchool" } } },
+    { "@type": "ListItem", position: 5, item: { "@type": "Course", name: "Islamic Studies for Kids", description: "Age-appropriate Islamic education covering basic Fiqh, Duas, and moral values.", provider: { "@type": "Organization", name: "vQuranSchool" } } },
+  ],
+};
 
 export default function CoursesPage() {
     const courses = [
@@ -14,6 +41,8 @@ export default function CoursesPage() {
     ];
 
     return (
+        <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }} />
         <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
             <section className="relative overflow-hidden pt-32 pb-24 lg:pt-40 lg:pb-32 flex items-center justify-center border-b border-slate-200 bg-white">
                 {/* Visual Background */}
@@ -29,12 +58,14 @@ export default function CoursesPage() {
                 </div>
 
                 <div className="container px-4 md:px-6 relative z-10 mx-auto text-center">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-4">Comprehensive Quran Education</p>
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-blue-950 mb-6 font-serif">
-                        Our Quran Courses
+                        Online Quran Courses for Every Level
                     </h1>
                     <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto font-light leading-relaxed">
-                        From absolute beginners to advanced memorizers, our comprehensive curriculum covers every learning need.
+                        From absolute beginners learning Noorani Qaida to advanced Hifz students — our certified tutors teach all levels. Serving students in the UK, USA, Canada &amp; Australia.
                     </p>
+                    <p className="mt-4 text-sm text-slate-400">All courses include a <strong className="text-blue-600">FREE trial class</strong> — no commitment required.</p>
                 </div>
             </section>
 
@@ -69,5 +100,6 @@ export default function CoursesPage() {
                 </div>
             </section>
         </div>
+        </>
     );
 }

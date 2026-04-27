@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { notifyPaymentApproved } from "@/lib/whatsapp";
+import { PLANS } from "@/lib/stripe";
 
 export async function GET() {
     const session = await getServerSession(authOptions);
@@ -11,7 +13,10 @@ export async function GET() {
 
     try {
         const { rows } = await sql`
-            SELECT u.name, u.email, s.user_id as id, s.payment_status, s.payment_receipt, s.access_expires_at
+            SELECT 
+                u.name, u.email, 
+                s.user_id as id, s.payment_status, s.payment_receipt, 
+                s.access_expires_at, s.whatsapp, s.course
             FROM Students s
             JOIN Users u ON u.id = s.user_id
             WHERE s.payment_status != 'unpaid'
@@ -32,9 +37,19 @@ export async function POST(req: Request) {
     try {
         const { studentId, action, months } = await req.json();
 
+        // Fetch student info for WhatsApp notification
+        const { rows: studentRows } = await sql`
+            SELECT u.name, s.whatsapp, s.course
+            FROM Users u
+            JOIN Students s ON s.user_id = u.id
+            WHERE u.id = ${studentId}
+            LIMIT 1
+        `;
+
+        const student = studentRows[0];
+
         if (action === "approve") {
             const addedMonths = months ? Number(months) : 1;
-            // Use GREATEST(access_expires_at, NOW()) to ensure extension works for active users
             await sql`
                 UPDATE Students
                 SET payment_status = 'active', 
@@ -42,6 +57,28 @@ export async function POST(req: Request) {
                     payment_receipt = NULL
                 WHERE user_id = ${studentId}
             `;
+
+            // Get the new expiry date
+            const { rows: updatedRows } = await sql`
+                SELECT access_expires_at FROM Students WHERE user_id = ${studentId}
+            `;
+
+            // Send WhatsApp notification
+            if (student?.whatsapp) {
+                const cleanNumber = student.whatsapp.replace(/[\s\-\+]/g, "");
+                const expiryDate = updatedRows[0]?.access_expires_at
+                    ? new Date(updatedRows[0].access_expires_at).toLocaleDateString("en-US", {
+                        year: "numeric", month: "long", day: "numeric",
+                    })
+                    : "N/A";
+
+                await notifyPaymentApproved(
+                    student.name,
+                    cleanNumber,
+                    student.course || "Quran Classes",
+                    expiryDate
+                );
+            }
         } else if (action === "reject") {
             await sql`
                 UPDATE Students

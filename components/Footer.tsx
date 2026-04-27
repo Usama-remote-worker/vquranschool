@@ -46,6 +46,15 @@ export function Footer() {
                         </ul>
                     </div>
                     <div>
+                        <h4 className="font-semibold text-white mb-6">Regional Programs</h4>
+                        <ul className="space-y-3 text-sm text-blue-200/80 font-light">
+                            <li><Link href="/online-quran-classes-uk" className="hover:text-white transition-colors">Quran Classes UK</Link></li>
+                            <li><Link href="/online-quran-classes-usa-canada" className="hover:text-white transition-colors">Quran Classes USA & Canada</Link></li>
+                            <li><Link href="/online-quran-classes-female-teachers" className="hover:text-white transition-colors">Female Quran Tutors</Link></li>
+                            <li><Link href="/blog" className="hover:text-white transition-colors">Islamic Blog</Link></li>
+                        </ul>
+                    </div>
+                    <div>
                         <h4 className="font-semibold text-white mb-6">Contact Info</h4>
                         <ul className="space-y-3 text-sm text-blue-200/80 font-light">
                             <li>Email: support@vquranschool.com</li>

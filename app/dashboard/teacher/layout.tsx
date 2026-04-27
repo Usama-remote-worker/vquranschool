@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "@/components/Sidebar";
-import { LayoutDashboard, Users, Calendar, Settings, Shield } from "lucide-react";
+import { LayoutDashboard, Users, Calendar, Settings, Shield, ClipboardList, DollarSign } from "lucide-react";
 
 export default function TeacherDashboardLayout({
     children,
@@ -12,6 +12,8 @@ export default function TeacherDashboardLayout({
         { title: "Dashboard", href: "/dashboard/teacher", icon: LayoutDashboard },
         { title: "My Students", href: "/dashboard/teacher/students", icon: Users },
         { title: "Schedule", href: "/dashboard/teacher/schedule", icon: Calendar },
+        { title: "Attendance", href: "/dashboard/teacher/attendance", icon: ClipboardList },
+        { title: "My Earnings", href: "/dashboard/teacher/earnings", icon: DollarSign },
         { title: "Profile", href: "/dashboard/teacher/profile", icon: Settings },
         { title: "Security", href: "/dashboard/teacher/security", icon: Shield },
     ];

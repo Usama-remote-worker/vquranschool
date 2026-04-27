@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Block dashboard and private API routes from crawling
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /admin-portal
+Disallow: /login
+Disallow: /register-student
+Disallow: /register-teacher
+
+# Allow important public pages
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /courses
+Allow: /pricing
+Allow: /teachers
+Allow: /book-trial
+Allow: /blog
+
+# Sitemap location
+Sitemap: https://vquranschool.com/sitemap.xml
