@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
     CheckCircle2,
@@ -36,7 +36,7 @@ type Subscription = {
     current_period_end: string;
 };
 
-export default function PaymentsPage() {
+function PaymentsContent() {
     const searchParams = useSearchParams();
     
     const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -45,7 +45,7 @@ export default function PaymentsPage() {
     
     // UI state
     const [view, setView] = useState<"overview" | "checkout" | "receipt">("overview");
-    const [selectedPlan, setSelectedPlan] = useState<PlanId>("tajweed");
+    const [selectedPlan, setSelectedPlan] = useState<PlanId>("3x_monthly");
     const [paymentMethod, setPaymentMethod] = useState<"card" | "bank">("card");
 
     // Bank transfer state
@@ -99,86 +99,129 @@ export default function PaymentsPage() {
         if (!selectedFile) return;
         setUploading(true);
         setUploadError("");
+        
         try {
-            const reader = new FileReader();
-            reader.readAsDataURL(selectedFile);
-            reader.onload = async () => {
-                const res = await fetch("/api/students/payment", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        receiptBase64: reader.result,
-                        planId: selectedPlan,
-                    }),
-                });
-                if (res.ok) {
-                    setUploadSuccess(true);
-                    setSelectedFile(null);
-                    setTimeout(() => setView("overview"), 3000);
-                } else {
-                    const d = await res.json();
-                    setUploadError(d.error || "Upload failed.");
-                }
-                setUploading(false);
-            };
-        } catch {
-            setUploadError("Network error. Try again.");
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            
+            const res = await fetch("/api/stripe/upload-receipt", {
+                method: "POST",
+                body: formData,
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                setUploadSuccess(true);
+            } else {
+                setUploadError(data.error || "Failed to upload receipt.");
+            }
+        } catch (err) {
+            setUploadError("Network error. Please try again.");
+        } finally {
             setUploading(false);
         }
     };
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-600 mb-4" />
-                <p className="text-slate-500 font-medium font-serif">Loading your academy details...</p>
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
         );
     }
 
-    const bankDetails = JSON.parse(settings?.bank_details || "{}");
+    const bankDetails = settings?.bank_details || {
+        bank: "Mezan Bank",
+        account_name: "Usama Aimen",
+        account_number: "0000300112681190",
+        iban: "PK02MEZN0000300112681190",
+        swift: "MEZN PK KA",
+    };
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-500 max-w-6xl">
-            {/* ── HEADER ── */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                <div>
-                    <h1 className="text-4xl font-black tracking-tight text-slate-900 font-serif">Payments & Billing</h1>
-                    <p className="text-slate-500 mt-2 text-lg font-light">Securely manage your Quranic learning subscription.</p>
-                </div>
-                {view !== "overview" && (
-                    <Button variant="ghost" onClick={() => setView("overview")} className="text-slate-500 font-bold hover:text-blue-600">
-                        ← Back to Overview
-                    </Button>
-                )}
-            </div>
-
-            {/* ── ACTIVE SUBSCRIPTION BANNER ── */}
-            {subscription?.status === "active" && view === "overview" && (
-                <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 rounded-[40px] p-10 text-white shadow-2xl shadow-blue-900/20 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
-                        <Zap className="w-40 h-40" />
+        <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
+            {/* ── OVERVIEW / ACTIVE SUBSCRIPTION ── */}
+            {view === "overview" && (
+                <div className="space-y-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                        <div>
+                            <h1 className="text-4xl font-black tracking-tight text-slate-900 font-serif">Payments & Billing</h1>
+                            <p className="text-slate-500 mt-2 text-lg font-light">Manage your subscription, view receipts, and update payment methods.</p>
+                        </div>
+                        <Button 
+                            onClick={() => setView("checkout")}
+                            className="h-14 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-600/20 active:scale-95 transition-all"
+                        >
+                            <Zap className="w-5 h-5 mr-2" /> Upgrade Plan
+                        </Button>
                     </div>
-                    <div className="relative z-10">
-                        <div className="flex flex-col sm:flex-row justify-between gap-10">
-                            <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center shrink-0 border border-white/10">
-                                    <CheckCircle2 className="w-10 h-10 text-blue-400" />
-                                </div>
-                                <div>
-                                    <p className="text-blue-300 text-xs font-black uppercase tracking-[0.3em]">Active Subscription</p>
-                                    <h2 className="text-4xl font-black mt-1">{PLANS[subscription.plan]?.name || "Active Plan"}</h2>
-                                    <div className="flex items-center gap-4 mt-3">
-                                        <div className="flex items-center gap-2 text-blue-200 text-sm font-bold bg-white/5 px-4 py-2 rounded-xl">
-                                            <Calendar className="w-4 h-4" /> Valid until {new Date(subscription.current_period_end).toLocaleDateString()}
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Status Card */}
+                        <div className="lg:col-span-2 bg-white p-10 rounded-[48px] border border-slate-200 shadow-sm relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700 opacity-50" />
+                            
+                            <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10">
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border ${
+                                            subscription?.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-amber-50 text-amber-600 border-amber-100"
+                                        }`}>
+                                            {subscription?.status || "No Active Plan"}
+                                        </div>
+                                    </div>
+                                    
+                                    <h2 className="text-5xl font-black text-slate-900 font-serif">
+                                        {subscription ? PLANS[subscription.plan]?.name : "Explore our Plans"}
+                                    </h2>
+                                    
+                                    <div className="flex flex-wrap gap-8 pt-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Billing</p>
+                                            <p className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                                <Calendar className="w-5 h-5 text-blue-500" />
+                                                {subscription ? new Date(subscription.current_period_end).toLocaleDateString() : "—"}
+                                            </p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Monthly Cost</p>
+                                            <p className="text-xl font-bold text-slate-800">
+                                                ${subscription?.price_usd || 0} <span className="text-slate-400 text-sm">/ month</span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className="flex flex-col justify-center items-center md:items-end gap-4 min-w-[200px]">
+                                    <div className="w-20 h-20 bg-blue-600 rounded-[28px] flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                                        <CreditCard className="w-10 h-10 text-white" />
+                                    </div>
+                                    <p className="text-slate-400 text-sm font-medium">Stripe Billing Enabled</p>
+                                </div>
                             </div>
-                            <div className="flex flex-col items-end justify-center">
-                                <p className="text-blue-300 text-sm font-bold uppercase tracking-widest mb-1">Status</p>
-                                <div className="px-6 py-2 bg-emerald-500 text-white font-black rounded-full shadow-lg shadow-emerald-500/20 uppercase text-xs tracking-widest">
-                                    Fully Paid
+                        </div>
+
+                        {/* Quick Stats */}
+                        <div className="bg-slate-900 p-10 rounded-[48px] text-white space-y-8 shadow-2xl shadow-slate-900/20">
+                            <h3 className="text-xl font-bold font-serif opacity-80">Class Usage</h3>
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="flex justify-between text-sm font-bold mb-3">
+                                        <span className="text-slate-400">Monthly Limit</span>
+                                        <span className="text-blue-400">{subscription?.classes_per_month || 0} Classes</span>
+                                    </div>
+                                    <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: subscription ? "75%" : "0%" }} />
+                                    </div>
+                                </div>
+                                <div className="pt-4 flex items-center gap-4 group cursor-pointer">
+                                    <div className="p-3 bg-white/10 rounded-2xl group-hover:bg-blue-600 transition-colors">
+                                        <Phone className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Support</p>
+                                        <p className="font-bold text-lg">{settings?.academy_whatsapp || "+92 304 4296295"}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -186,223 +229,61 @@ export default function PaymentsPage() {
                 </div>
             )}
 
-            {/* ── OVERVIEW VIEW ── */}
-            {view === "overview" && (subscription?.status !== "active") && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {/* Card 1: Select Plan */}
-                    <div className="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm space-y-8">
-                        <h2 className="text-2xl font-black text-slate-900 font-serif">1. Choose Your Plan</h2>
-                        <div className="grid gap-4">
-                            {(Object.keys(PLANS) as PlanId[]).map((id) => (
-                                <button
-                                    key={id}
-                                    onClick={() => setSelectedPlan(id)}
-                                    className={`flex items-center justify-between p-6 rounded-3xl border-2 transition-all ${
-                                        selectedPlan === id 
-                                        ? "border-blue-600 bg-blue-50/50 shadow-md scale-[1.02]" 
-                                        : "border-slate-100 hover:border-slate-200"
-                                    }`}
-                                >
-                                    <div className="text-left">
-                                        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">{PLANS[id].billing}</p>
-                                        <h3 className="text-xl font-black text-slate-800">{PLANS[id].name}</h3>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-2xl font-black text-blue-600">${PLANS[id].price_usd}</p>
-                                        <p className="text-[10px] font-bold text-slate-400">USD / MONTH</p>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Card 2: Select Method */}
-                    <div className="bg-slate-900 p-10 rounded-[40px] text-white space-y-8 shadow-2xl shadow-slate-900/20">
-                        <h2 className="text-2xl font-black font-serif">2. Select Method</h2>
-                        <div className="space-y-4">
-                            <button
-                                onClick={() => setPaymentMethod("card")}
-                                className={`w-full flex items-center gap-6 p-8 rounded-3xl border-2 transition-all ${
-                                    paymentMethod === "card" ? "border-blue-500 bg-blue-500/10" : "border-white/5 hover:border-white/10"
-                                }`}
-                            >
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${paymentMethod === "card" ? "bg-blue-600" : "bg-white/10"}`}>
-                                    <CreditCard className="w-7 h-7" />
-                                </div>
-                                <div className="text-left">
-                                    <h3 className="text-xl font-bold">Pay via Card</h3>
-                                    <p className="text-slate-400 text-sm">International Visa/Mastercard via SadaBiz</p>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => setPaymentMethod("bank")}
-                                className={`w-full flex items-center gap-6 p-8 rounded-3xl border-2 transition-all ${
-                                    paymentMethod === "bank" ? "border-emerald-500 bg-emerald-500/10" : "border-white/5 hover:border-white/10"
-                                }`}
-                            >
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${paymentMethod === "bank" ? "bg-emerald-600" : "bg-white/10"}`}>
-                                    <Building className="w-7 h-7" />
-                                </div>
-                                <div className="text-left">
-                                    <h3 className="text-xl font-bold">Bank Transfer / Wise</h3>
-                                    <p className="text-slate-400 text-sm">Manual verification (24h-48h)</p>
-                                </div>
-                            </button>
-                        </div>
-
-                        <Button 
-                            onClick={() => setView(paymentMethod === "card" ? "checkout" : "receipt")}
-                            className="w-full h-16 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-black text-xl shadow-xl active:scale-95 transition-all"
-                        >
-                            Proceed to Payment <ArrowRight className="w-6 h-6 ml-2" />
-                        </Button>
-                    </div>
-                         {/* ── UNIVERSAL CARD CHECKOUT VIEW ── */}
+            {/* ── SELECT PLAN / CHECKOUT VIEW ── */}
             {view === "checkout" && (
-                <div className="max-w-4xl mx-auto animate-in zoom-in-95 duration-300">
-                    <div className="bg-white rounded-[40px] border border-slate-200 shadow-2xl overflow-hidden">
-                        <div className="grid grid-cols-1 lg:grid-cols-5">
-                            {/* Left Side: Summary */}
-                            <div className="lg:col-span-2 bg-slate-900 p-10 text-white flex flex-col justify-between">
-                                <div>
-                                    <h2 className="text-3xl font-black font-serif mb-2">Checkout</h2>
-                                    <p className="text-slate-400 text-sm font-medium">Complete your enrollment</p>
-                                    
-                                    <div className="mt-12 space-y-6">
-                                        <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                                            <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1">Selected Program</p>
-                                            <h3 className="text-xl font-bold">{PLANS[selectedPlan].name}</h3>
-                                            <p className="text-slate-400 text-sm mt-1">{PLANS[selectedPlan].classes_per_week} Classes per week</p>
-                                        </div>
-                                        
-                                        <div className="flex justify-between items-end px-2">
-                                            <div>
-                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Amount</p>
-                                                <p className="text-4xl font-black text-white">${PLANS[selectedPlan].price_usd}</p>
-                                            </div>
-                                            <p className="text-blue-400 text-sm font-bold mb-1">USD</p>
-                                        </div>
-                                    </div>
-                                </div>
+                <div className="space-y-10">
+                    <div className="flex items-center justify-between">
+                        <Button variant="ghost" onClick={() => setView("overview")} className="rounded-xl font-bold text-slate-500 hover:text-blue-600">
+                            ← Back to Overview
+                        </Button>
+                        <h2 className="text-2xl font-black text-slate-900 font-serif">Choose a Payment Method</h2>
+                    </div>
 
-                                <div className="mt-12 p-6 bg-blue-600/10 rounded-3xl border border-blue-500/20">
-                                    <div className="flex items-center gap-3 text-blue-400 mb-2">
-                                        <ShieldCheck className="w-5 h-5" />
-                                        <span className="text-xs font-black uppercase tracking-widest">Secure Payment</span>
-                                    </div>
-                                    <p className="text-[10px] text-slate-400 leading-relaxed">
-                                        Your payment is processed through trusted international gateways. We do not store your card details.
-                                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div 
+                            onClick={() => setPaymentMethod("card")}
+                            className={`p-10 rounded-[40px] border-4 transition-all cursor-pointer group ${paymentMethod === "card" ? "border-blue-600 bg-blue-50/50 shadow-xl" : "border-slate-100 bg-white hover:border-slate-200"}`}
+                        >
+                            <div className="flex items-start justify-between mb-8">
+                                <div className={`p-5 rounded-[24px] ${paymentMethod === "card" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-400 group-hover:text-slate-600"} transition-colors`}>
+                                    <Globe className="w-10 h-10" />
                                 </div>
+                                {paymentMethod === "card" && <CheckCircle2 className="w-8 h-8 text-blue-600" />}
                             </div>
-
-                            {/* Right Side: Methods */}
-                            <div className="lg:col-span-3 p-10 bg-white space-y-8">
-                                <div>
-                                    <h3 className="text-xl font-black text-slate-900 mb-6">Choose Payment Method</h3>
-                                    
-                                    <div className="space-y-4">
-                                        {/* Method 1: Card via Link (SadaBiz or Payoneer) */}
-                                        <div className="p-1 rounded-[32px] bg-gradient-to-r from-blue-600 to-blue-400 shadow-lg shadow-blue-600/20">
-                                            <div className="bg-white rounded-[30px] p-6 space-y-6">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
-                                                            <CreditCard className="w-6 h-6" />
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-bold text-slate-900">Debit / Credit Card</h4>
-                                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Instant Activation</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-1">
-                                                        <div className="w-8 h-5 bg-slate-100 rounded opacity-60"></div>
-                                                        <div className="w-8 h-5 bg-slate-100 rounded opacity-60"></div>
-                                                        <div className="w-8 h-5 bg-slate-100 rounded opacity-60"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-3">
-                                                    {settings?.sadabiz_link && (
-                                                        <a 
-                                                            href={settings.sadabiz_link} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-3 font-bold transition-all shadow-md active:scale-[0.98]"
-                                                        >
-                                                            Pay via SadaPay <ExternalLink className="w-4 h-4" />
-                                                        </a>
-                                                    )}
-                                                    {settings?.payoneer_link && (
-                                                        <a 
-                                                            href={settings.payoneer_link} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-xl flex items-center justify-center gap-3 font-bold transition-all shadow-md active:scale-[0.98]"
-                                                        >
-                                                            Pay via Payoneer <ExternalLink className="w-4 h-4" />
-                                                        </a>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Method 2: Universal Card to Bank (Wise / Remitly) */}
-                                        <div className="bg-slate-50 rounded-[32px] p-6 border border-slate-100">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-                                                    <Globe className="w-6 h-6" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-bold text-slate-900">Universal Card-to-Bank</h4>
-                                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Use Wise, Remitly, or WorldRemit</p>
-                                                </div>
-                                            </div>
-                                            
-                                            <p className="text-xs text-slate-500 leading-relaxed mb-6">
-                                                No specific account? Use any international money transfer website to pay directly to our IBAN using your card.
-                                            </p>
-
-                                            <div className="space-y-4">
-                                                <div className="p-4 bg-white rounded-2xl border border-slate-200 flex justify-between items-center group">
-                                                    <div>
-                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">International IBAN</p>
-                                                        <p className="text-[11px] font-mono font-bold text-slate-700">{bankDetails.iban}</p>
-                                                    </div>
-                                                    <button onClick={() => handleCopy(bankDetails.iban, "IBAN")} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                                                        {copiedField === "IBAN" ? <CheckIcon className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-slate-400" />}
-                                                    </button>
-                                                </div>
-                                                
-                                                <div className="p-4 bg-white rounded-2xl border border-slate-200 flex justify-between items-center group">
-                                                    <div>
-                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5">SWIFT / BIC Code</p>
-                                                        <p className="text-[11px] font-mono font-bold text-slate-700">{bankDetails.swift || "N/A"}</p>
-                                                    </div>
-                                                    <button onClick={() => handleCopy(bankDetails.swift, "SWIFT")} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                                                        {copiedField === "SWIFT" ? <CheckIcon className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-slate-400" />}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                                                {["Wise", "Remitly", "WorldRemit", "Revolut"].map(p => (
-                                                    <div key={p} className="px-3 py-1 bg-white border border-slate-200 rounded-full text-[10px] font-bold text-slate-500 whitespace-nowrap">
-                                                        {p}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="mt-8 flex items-center justify-center gap-2">
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Need help paying?</p>
-                                        <a href={`https://wa.me/${settings?.academy_whatsapp?.replace('+','')}`} target="_blank" className="text-[10px] text-blue-600 font-black uppercase tracking-widest hover:underline">Contact Support</a>
-                                    </div>
-                                </div>
-                            </div>
+                            <h3 className="text-3xl font-black text-slate-900 font-serif mb-2">Global Card Payment</h3>
+                            <p className="text-slate-500 leading-relaxed">Instant activation. Secure payments powered by Stripe. Supports Visa, Mastercard, and more.</p>
                         </div>
+
+                        <div 
+                            onClick={() => setPaymentMethod("bank")}
+                            className={`p-10 rounded-[40px] border-4 transition-all cursor-pointer group ${paymentMethod === "bank" ? "border-emerald-600 bg-emerald-50/50 shadow-xl" : "border-slate-100 bg-white hover:border-slate-200"}`}
+                        >
+                            <div className="flex items-start justify-between mb-8">
+                                <div className={`p-5 rounded-[24px] ${paymentMethod === "bank" ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-400 group-hover:text-slate-600"} transition-colors`}>
+                                    <Building className="w-10 h-10" />
+                                </div>
+                                {paymentMethod === "bank" && <CheckCircle2 className="w-8 h-8 text-emerald-600" />}
+                            </div>
+                            <h3 className="text-3xl font-black text-slate-900 font-serif mb-2">Bank Transfer (PK)</h3>
+                            <p className="text-slate-500 leading-relaxed">Local transfer within Pakistan. Requires manual verification (approx. 12-24 hours).</p>
+                        </div>
+                    </div>
+
+                    <div className="pt-6 flex justify-center">
+                        {paymentMethod === "card" ? (
+                            <Link href="/dashboard/student/pricing">
+                                <Button className="h-16 px-12 rounded-[24px] bg-slate-900 hover:bg-black text-white font-black text-xl shadow-2xl active:scale-95 transition-all">
+                                    Proceed to Plans & Pricing <ArrowRight className="w-6 h-6 ml-3" />
+                                </Button>
+                            </Link>
+                        ) : (
+                            <Button 
+                                onClick={() => setView("receipt")}
+                                className="h-16 px-12 rounded-[24px] bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xl shadow-2xl active:scale-95 transition-all"
+                            >
+                                View Bank Details <Building className="w-6 h-6 ml-3" />
+                            </Button>
+                        )}
                     </div>
                 </div>
             )}
@@ -444,7 +325,6 @@ export default function PaymentsPage() {
                                         </div>
                                     )
                                 ))}
-                            </div>
                             </div>
                         </div>
 
@@ -523,11 +403,14 @@ export default function PaymentsPage() {
     );
 }
 
-function ShieldCheck({ className }: { className?: string }) {
+export default function PaymentsPage() {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-            <path d="m9 12 2 2 4-4" />
-        </svg>
+        <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+        }>
+            <PaymentsContent />
+        </Suspense>
     );
 }

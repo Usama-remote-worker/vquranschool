@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import {
     UserCog, Inbox, Check, X, Loader2, ArrowRight,
     Users, GraduationCap, BookOpen, TrendingUp, Clock,
-    RefreshCw, ChevronRight, AlertCircle
+    RefreshCw, ChevronRight, AlertCircle, CreditCard, KeyRound
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 
 import { Teacher, Student } from "@/types";

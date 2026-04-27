@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Check, CreditCard, Building, Globe, Zap, BookOpen, Clock } from "lucide-react";
+import { Check, CreditCard, Building, Globe, Zap, BookOpen, Clock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CourseCard } from "@/components/CourseCard";
+import { useToast } from "@/components/ui/toast";
 
 const courses = [
     { id: "1", title: "Noorani Qaida", description: "Learn the basics of Arabic reading with proper pronunciation.", level: "Beginner" },
@@ -13,9 +14,6 @@ const courses = [
     { id: "5", title: "Islamic Studies for Kids", description: "Age-appropriate learning of basic Islamic principles, Dua and Fiqh.", level: "Beginner" },
 ];
 
-// ─────────────────────────────────────────────────────────────
-// Pricing data: two frequency tiers × three duration plans
-// ─────────────────────────────────────────────────────────────
 const tiers = [
     {
         id: "3x",
@@ -148,7 +146,7 @@ const tiers = [
 export default function PricingPage() {
     const [activeTier, setActiveTier] = useState<"3x" | "5x">("5x");
     const [loading, setLoading] = useState<string | null>(null);
-    const { addToast } = useToast();
+    const { addToast } = useToast() as any;
 
     const handleCheckout = async (planId: string) => {
         setLoading(planId);
@@ -162,10 +160,10 @@ export default function PricingPage() {
             if (data.url) {
                 window.location.href = data.url;
             } else {
-                addToast(data.error || "Checkout failed", "error");
+                addToast?.(data.error || "Checkout failed", "error");
             }
         } catch (error) {
-            addToast("Network error. Try manual payment.", "error");
+            addToast?.("Network error. Try manual payment.", "error");
         } finally {
             setLoading(null);
         }
@@ -175,7 +173,7 @@ export default function PricingPage() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
-            {/* ── Header ── */}
+            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
                     <h1 className="text-4xl font-black tracking-tight text-slate-900 font-serif">Pricing & Courses</h1>
@@ -190,7 +188,7 @@ export default function PricingPage() {
                 </div>
             </div>
 
-            {/* ── Pricing Section ── */}
+            {/* Pricing Section */}
             <div className="space-y-8 pt-8 border-t border-slate-200">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
                     <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-full md:w-auto">
@@ -216,7 +214,7 @@ export default function PricingPage() {
                     </div>
                 </div>
 
-                {/* ── Plans Grid ── */}
+                {/* Plans Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
                     {currentTier.plans.map((plan, i) => {
                         const planId = `${activeTier}_${plan.name.toLowerCase().split('-')[0].trim().replace('quarterly', 'quarterly').replace('semi-annual', 'semi')}`;
@@ -294,9 +292,8 @@ export default function PricingPage() {
                     })}
                 </div>
             </div>
-            </div>
 
-            {/* ── Quick comparison strip ── */}
+            {/* Quick comparison strip */}
             <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mt-8">
                 <div className="bg-blue-950 text-white px-6 py-4">
                     <h3 className="font-bold text-base">Per-Session Price Comparison</h3>
@@ -337,7 +334,7 @@ export default function PricingPage() {
                 </div>
             </div>
 
-            {/* ── Payment Methods ── */}
+            {/* Payment Methods */}
             <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
                 <h2 className="text-xl font-bold text-blue-950 font-serif mb-2">Accepted Payment Methods</h2>
                 <p className="text-slate-500 text-sm mb-6">Secure and flexible payments for students worldwide.</p>
@@ -363,7 +360,7 @@ export default function PricingPage() {
                 </div>
             </div>
 
-            {/* ── Courses Section ── */}
+            {/* Courses Section */}
             <div className="space-y-6 pt-6 border-t border-slate-200">
                 <div>
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -379,6 +376,5 @@ export default function PricingPage() {
                 </div>
             </div>
         </div>
-    </div>
     );
 }

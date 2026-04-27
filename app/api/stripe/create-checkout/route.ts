@@ -81,13 +81,13 @@ export async function POST(req: NextRequest) {
             ],
             metadata: {
                 user_id: session.user.id,
-                plan_id: planId,
+                plan_id: planId.toString(),
                 student_email: session.user.email!,
             },
             subscription_data: {
                 metadata: {
                     user_id: session.user.id,
-                    plan_id: planId,
+                    plan_id: planId.toString(),
                 },
             },
             success_url: `${baseUrl}/dashboard/student/payments?success=true&plan=${planId}`,
